@@ -76,7 +76,6 @@ export default function LandingPage() {
                 </section>
 
 
-
                 {/* Features Section */}
                 <section className="relative py-16 md:py-24 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 overflow-hidden">
                     {/* Background Pattern */}

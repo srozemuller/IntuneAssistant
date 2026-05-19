@@ -12,6 +12,7 @@ import { ConsentProvider } from "@/contexts/ConsentContext";
 import { ErrorProvider } from '@/contexts/ErrorContext';
 import { MonitorProvider } from '@/contexts/MonitorContext';
 import { AuditEventsProvider } from '@/contexts/AuditEventsContext';
+import { MessageCenterProvider } from '@/contexts/MessageCenterContext';
 import { GlobalErrorDisplay } from '@/components/GlobalErrorDisplay';
 import { TenantIndicator } from '@/components/ui/tenant-indicator';
 import { ConsentBanner } from '@/components/ConsentBanner';
@@ -50,11 +51,13 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                             <TenantProvider>
                                 <MonitorProvider>
                                     <AuditEventsProvider>
-                                        <SidebarProvider>
-                                            <MainContent>
-                                                {children}
-                                            </MainContent>
-                                        </SidebarProvider>
+                                        <MessageCenterProvider>
+                                            <SidebarProvider>
+                                                <MainContent>
+                                                    {children}
+                                                </MainContent>
+                                            </SidebarProvider>
+                                        </MessageCenterProvider>
                                     </AuditEventsProvider>
                                 </MonitorProvider>
                             </TenantProvider>

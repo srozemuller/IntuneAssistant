@@ -61,7 +61,7 @@ interface CSVRow {
     PolicyName: string;
     GroupName: string;
     AssignmentDirection: 'Include' | 'Exclude';
-    AssignmentAction: 'Add' | 'Remove' | 'NoAssignment' | 'Replace';
+    AssignmentAction: 'Add' | 'Remove' | 'NoAssignment' | 'Replace' | 'Update';
     FilterName: string | null;
     FilterType: string | null;
     isValidAction?: boolean;
@@ -434,7 +434,7 @@ function AssignmentRolloutContent() {
     const summaryTableData = useMemo(() => {
         // Debug: Check batchIndex in masterTrackingData BEFORE mapping
         const masterWithBatch = masterTrackingData.filter(r => r.batchIndex !== null && r.batchIndex !== undefined).length;
-        console.log(`🔍 SUMMARY masterTrackingData: ${masterWithBatch} / ${masterTrackingData.length} have batchIndex`);
+        console.log(`SUMMARY masterTrackingData: ${masterWithBatch} / ${masterTrackingData.length} have batchIndex`);
         if (masterWithBatch > 0) {
             const samples = masterTrackingData.filter(r => r.batchIndex !== null && r.batchIndex !== undefined).slice(0, 3);
             console.log('Sample masterTrackingData with batchIndex for SUMMARY:', samples.map(r => ({
@@ -813,15 +813,17 @@ function AssignmentRolloutContent() {
                     <Badge
                         variant={
                             csvRow.AssignmentAction === 'Add' ? 'default' :
-                                csvRow.AssignmentAction === 'Replace' ? 'default' :
-                                    csvRow.AssignmentAction === 'Remove' ? 'destructive' :
-                                        csvRow.AssignmentAction === 'NoAssignment' ? 'secondary' : 'secondary'
+                            csvRow.AssignmentAction === 'Replace' ? 'default' :
+                            csvRow.AssignmentAction === 'Update' ? 'default' :
+                            csvRow.AssignmentAction === 'Remove' ? 'destructive' :
+                            csvRow.AssignmentAction === 'NoAssignment' ? 'secondary' : 'secondary'
                         }
                         className={
                             csvRow.AssignmentAction === 'Add' ? 'bg-green-500 hover:bg-green-600 text-white' :
-                                csvRow.AssignmentAction === 'Replace' ? 'bg-blue-500 hover:bg-blue-600 text-white' :
-                                    csvRow.AssignmentAction === 'Remove' ? 'bg-orange-500 hover:bg-orange-600 text-white' :
-                                        csvRow.AssignmentAction === 'NoAssignment' ? 'bg-gray-500 hover:bg-gray-600 text-white' : ''
+                            csvRow.AssignmentAction === 'Replace' ? 'bg-blue-500 hover:bg-blue-600 text-white' :
+                            csvRow.AssignmentAction === 'Update' ? 'bg-purple-500 hover:bg-purple-600 text-white' :
+                            csvRow.AssignmentAction === 'Remove' ? 'bg-orange-500 hover:bg-orange-600 text-white' :
+                            csvRow.AssignmentAction === 'NoAssignment' ? 'bg-gray-500 hover:bg-gray-600 text-white' : ''
                         }
                     >
                         {csvRow.AssignmentAction}
@@ -1940,7 +1942,7 @@ function AssignmentRolloutContent() {
             };
 
             const getAssignmentAction = (value: string): {
-                action: 'Add' | 'Remove' | 'NoAssignment' | 'Replace';
+                action: 'Add' | 'Remove' | 'NoAssignment' | 'Replace' | 'Update';
                 isValid: boolean;
                 originalValue?: string
             } => {
@@ -1949,7 +1951,7 @@ function AssignmentRolloutContent() {
                 if (normalized === 'replace') return {action: 'Replace', isValid: true};
                 if (normalized === 'remove') return {action: 'Remove', isValid: true};
                 if (normalized === 'noassignment') return {action: 'NoAssignment', isValid: true};
-
+                if (normalized === 'update') return {action: 'Update', isValid: true};
                 if (!value || value.trim() === '') {
                     return {action: 'Add', isValid: true};
                 }
@@ -2022,7 +2024,7 @@ function AssignmentRolloutContent() {
                 validationErrors.push({
                     rowIndex: index + 2,
                     field: 'AssignmentAction',
-                    message: `Invalid Assignment Action: "${actionResult.originalValue}". Must be Add, Remove, Replace, or NoAssignment`
+                    message: `Invalid Assignment Action: "${actionResult.originalValue}". Must be Add, Remove, Replace, Update or NoAssignment`
                 });
             }
 
@@ -2679,7 +2681,7 @@ function AssignmentRolloutContent() {
                 // Verify masterTrackingData was updated with batchIndex
                 setMasterTrackingData(prev => {
                     const withBatch = prev.filter(r => r.batchIndex !== null && r.batchIndex !== undefined).length;
-                    console.log('✅ masterTrackingData after update:', withBatch, '/', prev.length, 'have batchIndex');
+                    console.log('masterTrackingData after update:', withBatch, '/', prev.length, 'have batchIndex');
                     if (withBatch > 0) {
                         console.log('Sample items with batchIndex:', prev.filter(r => r.batchIndex !== null && r.batchIndex !== undefined).slice(0, 3).map(r => ({
                             id: r.id.substring(0, 8),
@@ -2890,7 +2892,7 @@ function AssignmentRolloutContent() {
                 return item;
             }));
 
-            console.log('✅ Marked unprocessed ready items as migration_ready');
+            console.log('Marked unprocessed ready items as migration_ready');
 
             setCurrentStep('results');
             setMigratedRowIds([...selectedRows]); // freeze the migrated row IDs for validation
@@ -4018,7 +4020,7 @@ const validateAssignments = async () => {
                                     </div>
 
                                     <div
-                                        className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-gray-50 dark:bg-neutral-800 p-4 rounded-lg">
+                                        className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-gray-50 dark:bg-neutral-800 p-4 rounded-lg">
                                         <div className="text-center">
                                             <div
                                                 className="text-2xl font-bold text-blue-500">{csvData.filter(r => r.isValid).length}</div>
@@ -4035,6 +4037,12 @@ const validateAssignments = async () => {
                                                 {csvData.filter(r => r.isValid && r.AssignmentAction === 'Remove').length}
                                             </div>
                                             <div className="text-sm text-gray-600 dark:text-gray-400">Remove Actions</div>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="text-2xl font-bold text-purple-500">
+                                                {csvData.filter(r => r.isValid && r.AssignmentAction === 'Update').length}
+                                            </div>
+                                            <div className="text-sm text-gray-600 dark:text-gray-400">Update Actions</div>
                                         </div>
                                         <div className="text-center">
                                             <div className="text-2xl font-bold text-red-500">
