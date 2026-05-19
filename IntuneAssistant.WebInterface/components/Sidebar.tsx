@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import {useCustomer} from "@/contexts/CustomerContext";
+import { useMessageCenter } from '@/contexts/MessageCenterContext';
 
 import {
     DropdownMenu,
@@ -53,7 +54,8 @@ import {
     MonitorCog,
     ShieldCheck,
     MonitorCheck,
-    ScrollText, ShieldUser
+    ScrollText, ShieldUser,
+    Bell,
 } from 'lucide-react';
 
 const iconMap = {
@@ -112,6 +114,7 @@ export function Sidebar() {
     const { isCollapsed, toggleSidebar } = useSidebar();
     const router = useRouter();
     const { isActiveCustomer, customerLoading, customerData } = useCustomer();
+    const { unreadCount } = useMessageCenter();
 
     const account = accounts[0];
     const displayName = account?.name || account?.username || 'User';
@@ -344,9 +347,11 @@ export function Sidebar() {
                     href: "/monitor",
                     submenu: [
                         { title: "Global Overview", href: "/monitor/global-overview" },
+                        { title: "Wall Dashboard", href: "/monitor/dashboard" },
                         { title: "All Monitors", href: "/monitor/monitors" },
                         { title: "Add Monitor", href: "/monitor/add" },
-                        { title: "Drifts", href: "/monitor/drift" }
+                        { title: "Drifts", href: "/monitor/drift" },
+                        { title: "Snapshots", href: "/monitor/snapshots" }
                     ]
                 }
             ]
@@ -505,16 +510,31 @@ export function Sidebar() {
                                         isCollapsed ? "w-10 justify-center" : "w-full justify-start"
                                     )}>
                                         <div className={cn("flex items-center gap-3", isCollapsed ? "justify-center" : "w-full")}>
-                                            <Avatar className="h-8 w-8 shadow-sm">
-                                                <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                                                    {initials}
-                                                </AvatarFallback>
-                                            </Avatar>
+                                            <div className="relative shrink-0">
+                                                <Avatar className="h-8 w-8 shadow-sm">
+                                                    <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                                                        {initials}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                {unreadCount > 0 && (
+                                                    <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+                                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75" />
+                                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-orange-500" />
+                                                    </span>
+                                                )}
+                                            </div>
                                             {!isCollapsed && (
                                                 <div className="flex-1 text-left overflow-hidden">
-                                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                                                        {displayName}
-                                                    </p>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                                            {displayName}
+                                                        </p>
+                                                        {unreadCount > 0 && (
+                                                            <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-orange-500 text-white text-[10px] font-bold leading-none shrink-0">
+                                                                {unreadCount}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                                                         {account?.username}
                                                     </p>
@@ -533,6 +553,15 @@ export function Sidebar() {
                                         </div>
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={() => router.push('/message-center')}>
+                                        <Bell className="mr-2 h-4 w-4" />
+                                        <span className="flex-1">Message Center</span>
+                                        {unreadCount > 0 && (
+                                            <span className="ml-auto inline-flex items-center justify-center h-5 min-w-5 px-1.5 rounded-full bg-orange-500 text-white text-[10px] font-bold">
+                                                {unreadCount}
+                                            </span>
+                                        )}
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => window.location.href = '/account'}>
                                         <User className="mr-2 h-4 w-4" />
                                         <span>Profile</span>

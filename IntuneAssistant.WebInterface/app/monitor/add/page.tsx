@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -9,30 +9,38 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
-    Shield,
-    ArrowRight,
-    CheckCircle,
-    Loader2,
-    AlertCircle,
-    Clock, LaptopIcon
+    Shield, ArrowRight, CheckCircle, Loader2, AlertCircle, Clock,
+    LaptopIcon, Search, X, ChevronDown, ChevronRight, Sparkles,
+    Wand2, BookTemplate, Filter, Crown, Layers, ChevronLeft,
+    Activity, Camera, FileText, Package,
 } from 'lucide-react';
 import { useApiRequest } from '@/hooks/useApiRequest';
+import { useCustomer } from '@/contexts/CustomerContext';
 import {
     MONITOR_CONFIGURATION_SNAPSHOTS,
-    MONITOR_CONFIGURATION_SNAPSHOTS_JOBS,
-    MONITOR_CONFIGURATION_ENDPOINT
+    MONITOR_CONFIGURATION_ENDPOINT,
+    MONITOR_SNAPSHOTS_JOB_BY_ID,
+    MONITOR_SNAPSHOT_BY_ID,
 } from '@/lib/constants';
+import { cn } from '@/lib/utils';
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+type TemplateCategory = 'all' | 'intune' | 'entra' | 'exchange' | 'custom';
+type WizardStep = 'gallery' | 'configure' | 'creating' | 'polling' | 'review' | 'submitting' | 'success' | 'error';
 
 interface MonitorTemplate {
     id: string;
     title: string;
     description: string;
+    category: Exclude<TemplateCategory, 'all' | 'custom'>;
     icon: React.ComponentType<{ className?: string }>;
     gradient: string;
-    bgGradient: string;
-    borderColor: string;
+    accentColor: string;
     resources: string[];
+    comingSoon?: boolean;
 }
 
 interface SnapshotJob {
@@ -43,9 +51,11 @@ interface SnapshotJob {
     status: 'notStarted' | 'inProgress' | 'succeeded' | 'partiallySuccessful' | 'failed';
     resources: string[];
     createdDateTime: string;
-    completedDateTime: string;
+    completedDateTime: string | null;
+    expirationDateTime: string | null;
     snapshotId: string | null;
-    resourceLocation: string;
+    resourceLocation: string | null;
+    createdBy: { user: { id: string; displayName: string } } | null;
     error: unknown;
 }
 
@@ -63,327 +73,520 @@ interface Snapshot {
     resources: SnapshotResource[];
 }
 
-interface ApiResponse<T> {
-    status: number;
-    message: string;
-    details: unknown[];
-    data: T;
+interface ApiEnvelope<T> { status: number; message: string; data: T; }
+
+// ─── Resource categories for custom monitors ──────────────────────────────────
+
+const CUSTOM_RESOURCE_CATEGORIES = [
+    {
+        name: 'compliance', displayName: 'Compliance Policies',
+        resources: [
+            'microsoft.intune.devicecompliancepolicyandroid',
+            'microsoft.intune.devicecompliancepolicyandroiddeviceowner',
+            'microsoft.intune.devicecompliancepolicyandroidworkprofile',
+            'microsoft.intune.devicecompliancepolicyios',
+            'microsoft.intune.devicecompliancepolicymacos',
+            'microsoft.intune.devicecompliancepolicywindows10',
+        ],
+    },
+    {
+        name: 'configuration', displayName: 'Configuration Policies',
+        resources: [
+            'microsoft.intune.deviceconfigurationcustompolicywindows10',
+            'microsoft.intune.deviceconfigurationendpointprotectionpolicywindows10',
+            'microsoft.intune.deviceconfigurationdeliveryoptimizationpolicywindows10',
+            'microsoft.intune.deviceconfigurationadministrativetemplatepolicywindows10',
+            'microsoft.intune.deviceconfigurationpolicywindows10',
+            'microsoft.intune.deviceconfigurationcustompolicyios',
+            'microsoft.intune.deviceconfigurationcustompolicymacos',
+            'microsoft.intune.deviceconfigurationcustompolicyandroid',
+        ],
+    },
+    {
+        name: 'settings', displayName: 'Settings Catalog',
+        resources: ['microsoft.intune.devicemanagementconfigurationpolicy'],
+    },
+    {
+        name: 'enrollment', displayName: 'Enrollment',
+        resources: [
+            'microsoft.intune.deviceenrollmentstatuspagewindows10',
+            'microsoft.intune.deviceenrollmentplatformrestriction',
+        ],
+    },
+    {
+        name: 'security', displayName: 'Security & Roles',
+        resources: [
+            'microsoft.intune.roleassignment',
+            'microsoft.intune.deviceandappmanagementassignmentfilter',
+        ],
+    },
+    {
+        name: 'scripts', displayName: 'Scripts & Remediations',
+        resources: [
+            'microsoft.intune.devicemanagementscript',
+            'microsoft.intune.devicehealthscript',
+        ],
+    },
+];
+
+function fmtResource(r: string) {
+    return r
+        .replace(/^microsoft\.(intune|exchange|entra)\./i, '')
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/\b\w/g, c => c.toUpperCase())
+        .replace(/\s+/g, ' ')
+        .trim();
 }
 
-const POLLING_INTERVAL = 10000; // 10 seconds
+function fmtPropValue(v: unknown): string {
+    if (v === null || v === undefined) return '—';
+    if (Array.isArray(v)) return v.join(', ') || '(empty)';
+    if (typeof v === 'object') return JSON.stringify(v);
+    return String(v);
+}
+
+// ─── Template Definitions ─────────────────────────────────────────────────────
+
+const MONITOR_TEMPLATES: MonitorTemplate[] = [
+    {
+        id: 'compliance-policies', title: 'Compliance Policies',
+        description: 'Monitor device compliance policies across Android, iOS, macOS, and Windows.',
+        category: 'intune', icon: Shield, gradient: 'from-blue-500 to-cyan-500', accentColor: 'blue',
+        resources: [
+            'microsoft.intune.devicecompliancepolicyandroid',
+            'microsoft.intune.devicecompliancepolicyandroiddeviceowner',
+            'microsoft.intune.devicecompliancepolicyandroidworkprofile',
+            'microsoft.intune.devicecompliancepolicyios',
+            'microsoft.intune.devicecompliancepolicymacos',
+            'microsoft.intune.devicecompliancepolicywindows10',
+        ],
+    },
+    {
+        id: 'windows10-config-policies', title: 'Windows Configuration Policies',
+        description: 'Monitor all device configuration policies for Windows platforms.',
+        category: 'intune', icon: LaptopIcon, gradient: 'from-amber-500 to-yellow-500', accentColor: 'amber',
+        resources: [
+            'microsoft.intune.deviceconfigurationadministrativetemplatepolicywindows10',
+            'microsoft.intune.deviceconfigurationcustompolicywindows10',
+            'microsoft.intune.deviceconfigurationdefenderforendpointonboardingpolicywindows10',
+            'microsoft.intune.deviceconfigurationdeliveryoptimizationpolicywindows10',
+            'microsoft.intune.deviceconfigurationdomainjoinpolicywindows10',
+            'microsoft.intune.deviceconfigurationemailprofilepolicywindows10',
+            'microsoft.intune.deviceconfigurationendpointprotectionpolicywindows10',
+            'microsoft.intune.deviceconfigurationfirmwareinterfacepolicywindows10',
+            'microsoft.intune.deviceconfigurationkioskpolicywindows10',
+            'microsoft.intune.deviceconfigurationpolicywindows10',
+            'microsoft.intune.deviceconfigurationvpnpolicywindows10',
+        ],
+    },
+    {
+        id: 'role-assignments', title: 'Role Assignments',
+        description: 'Monitor Intune role assignments and administrative permissions.',
+        category: 'intune', icon: Shield, gradient: 'from-lime-500 to-green-500', accentColor: 'green',
+        resources: ['microsoft.intune.roleassignment'],
+    },
+    {
+        id: 'assignment-filters', title: 'Assignment Filters',
+        description: 'Monitor Intune assignment filters for policy targeting.',
+        category: 'intune', icon: Filter, gradient: 'from-purple-500 to-pink-500', accentColor: 'purple',
+        resources: ['microsoft.intune.deviceandappmanagementassignmentfilter'],
+    },
+    {
+        id: 'enrollment-status-page', title: 'Enrollment Status Page',
+        description: 'Monitor Windows 10 Enrollment Status Page configurations.',
+        category: 'intune', icon: Activity, gradient: 'from-blue-500 to-indigo-500', accentColor: 'indigo',
+        resources: ['microsoft.intune.deviceenrollmentstatuspagewindows10'],
+    },
+    {
+        id: 'enrollment-platform-restrictions', title: 'Platform Restrictions',
+        description: 'Monitor device enrollment platform restriction policies.',
+        category: 'intune', icon: Layers, gradient: 'from-cyan-500 to-teal-500', accentColor: 'teal',
+        resources: ['microsoft.intune.deviceenrollmentplatformrestriction'],
+    },
+    {
+        id: 'entra-conditional-access', title: 'Conditional Access Policies',
+        description: 'Monitor Entra ID conditional access policies for drift.',
+        category: 'entra', icon: Shield, gradient: 'from-violet-500 to-purple-500', accentColor: 'violet',
+        resources: [], comingSoon: true,
+    },
+    {
+        id: 'entra-groups', title: 'Group Memberships',
+        description: 'Track changes to Entra ID security and M365 group memberships.',
+        category: 'entra', icon: Activity, gradient: 'from-fuchsia-500 to-pink-500', accentColor: 'fuchsia',
+        resources: [], comingSoon: true,
+    },
+    {
+        id: 'exchange-transport-rules', title: 'Transport Rules',
+        description: 'Monitor Exchange Online transport/mail flow rules for changes.',
+        category: 'exchange', icon: Shield, gradient: 'from-orange-500 to-red-500', accentColor: 'orange',
+        resources: [], comingSoon: true,
+    },
+];
+
+const CATEGORY_META: Record<TemplateCategory, { label: string; icon: React.ComponentType<{ className?: string }> }> = {
+    all:      { label: 'All Templates', icon: Layers },
+    intune:   { label: 'Intune',        icon: LaptopIcon },
+    entra:    { label: 'Entra ID',      icon: Shield },
+    exchange: { label: 'Exchange',      icon: Activity },
+    custom:   { label: 'Custom',        icon: Wand2 },
+};
+
+const POLLING_INTERVAL = 10000;
+
+// ─── Step indicator ───────────────────────────────────────────────────────────
+
+const STEPS = [
+    { label: 'Template' },
+    { label: 'Configure' },
+    { label: 'Snapshot' },
+    { label: 'Review' },
+    { label: 'Done' },
+];
+
+function stepIndex(s: WizardStep): number {
+    switch (s) {
+        case 'gallery':    return 0;
+        case 'configure':  return 1;
+        case 'creating':
+        case 'polling':    return 2;
+        case 'review':
+        case 'submitting': return 3;
+        case 'success':    return 4;
+        case 'error':      return 2;
+        default:           return 0;
+    }
+}
+
+function StepIndicator({ step }: { step: WizardStep }) {
+    const cur = stepIndex(step);
+    return (
+        <div className="flex items-center gap-1">
+            {STEPS.map((s, idx) => {
+                const done = idx < cur;
+                const current = idx === cur;
+                return (
+                    <React.Fragment key={idx}>
+                        <div className={cn(
+                            'flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full transition-all whitespace-nowrap',
+                            done    && 'bg-primary/10 text-primary',
+                            current && 'bg-primary text-primary-foreground shadow-sm',
+                            !done && !current && 'text-muted-foreground',
+                        )}>
+                            {done
+                                ? <CheckCircle className="h-3 w-3 shrink-0" />
+                                : <span className="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center text-[10px] shrink-0">{idx + 1}</span>
+                            }
+                            <span className="hidden sm:inline">{s.label}</span>
+                        </div>
+                        {idx < STEPS.length - 1 && (
+                            <div className={cn('flex-1 h-px min-w-4 max-w-10', done ? 'bg-primary/40' : 'bg-border')} />
+                        )}
+                    </React.Fragment>
+                );
+            })}
+        </div>
+    );
+}
+
+// ─── Resource property table ──────────────────────────────────────────────────
+
+function PropertyTable({ properties }: { properties: Record<string, unknown> }) {
+    const entries = Object.entries(properties);
+    if (entries.length === 0) return <p className="text-xs text-muted-foreground italic">No properties</p>;
+    return (
+        <table className="w-full text-xs border-collapse">
+            <tbody>
+                {entries.map(([key, val]) => (
+                    <tr key={key} className="border-b last:border-0 border-border/50">
+                        <td className="py-1 pr-3 font-medium text-muted-foreground w-2/5 align-top">{key}</td>
+                        <td className="py-1 font-mono break-all text-foreground/80">{fmtPropValue(val)}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
+}
+
+// ─── Resource group row ───────────────────────────────────────────────────────
+
+function ResourceGroup({ resourceType, items }: { resourceType: string; items: SnapshotResource[] }) {
+    const [open, setOpen] = useState(false);
+    const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+
+    return (
+        <div className="border rounded-lg overflow-hidden">
+            {/* Group header */}
+            <button
+                className="w-full flex items-center gap-3 p-3 bg-muted/30 hover:bg-muted/50 transition-colors text-left"
+                onClick={() => setOpen(o => !o)}
+            >
+                <div className="p-1.5 rounded bg-primary/10">
+                    <Package className="h-3.5 w-3.5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate">{fmtResource(resourceType)}</p>
+                    <p className="text-[10px] text-muted-foreground font-mono truncate">{resourceType}</p>
+                </div>
+                <Badge variant="secondary" className="text-xs shrink-0">{items.length} item{items.length !== 1 ? 's' : ''}</Badge>
+                {open
+                    ? <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+                    : <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                }
+            </button>
+
+            {/* Resource rows */}
+            {open && (
+                <div className="divide-y divide-border/50">
+                    {items.map((item, idx) => (
+                        <div key={idx} className="bg-card">
+                            <button
+                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-muted/30 transition-colors text-left"
+                                onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
+                            >
+                                <FileText className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                                <span className="flex-1 text-sm truncate">{item.displayName}</span>
+                                <span className="text-[10px] text-muted-foreground shrink-0 mr-1">
+                                    {Object.keys(item.properties).length} props
+                                </span>
+                                {expandedIdx === idx
+                                    ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                                    : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                                }
+                            </button>
+
+                            {/* Properties panel */}
+                            {expandedIdx === idx && (
+                                <div className="px-4 pb-3 pt-1 bg-muted/10 border-t border-border/40">
+                                    <PropertyTable properties={item.properties} />
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function AddMonitorPage() {
     const { accounts } = useMsal();
     const { request } = useApiRequest();
     const router = useRouter();
+    const { customerData } = useCustomer();
 
+    const hasEnterpriseLicense = useMemo(() =>
+        customerData?.licenses?.some(l => l.licenseType === 2 && l.isActive) ?? false,
+    [customerData]);
+
+    // ── Wizard state ─────────────────────────────────────────────────────────
+    const [step, setStep] = useState<WizardStep>('gallery');
     const [selectedTemplate, setSelectedTemplate] = useState<MonitorTemplate | null>(null);
-    const [step, setStep] = useState<'select' | 'configure' | 'creating' | 'polling' | 'success' | 'error'>('select');
+    const [isCustom, setIsCustom] = useState(false);
 
+    // ── Gallery filters ───────────────────────────────────────────────────────
+    const [activeCategory, setActiveCategory] = useState<TemplateCategory>('all');
+    const [searchQuery, setSearchQuery] = useState('');
+
+    // ── Configure form ────────────────────────────────────────────────────────
     const [monitorName, setMonitorName] = useState('');
     const [monitorDescription, setMonitorDescription] = useState('');
 
-    const [snapshotJobId, setSnapshotJobId] = useState<string | null>(null);
-    const [snapshotStatus, setSnapshotStatus] = useState<string>('');
+    // ── Custom resource picker ────────────────────────────────────────────────
+    const [customResources, setCustomResources] = useState<string[]>([]);
+    const [resourceSearch, setResourceSearch] = useState('');
+    const [expandedCats, setExpandedCats] = useState<string[]>(['compliance', 'configuration']);
+
+    // ── Creation / polling ────────────────────────────────────────────────────
+    const [snapshotStatus, setSnapshotStatus] = useState('');
     const [pollingAttempts, setPollingAttempts] = useState(0);
     const [countdown, setCountdown] = useState(10);
+
+    // ── Review step ───────────────────────────────────────────────────────────
+    const [currentSnapshot, setCurrentSnapshot] = useState<Snapshot | null>(null);
+    const [currentJob, setCurrentJob] = useState<SnapshotJob | null>(null);
+    const [reviewSearch, setReviewSearch] = useState('');
+
+    // ── Result ────────────────────────────────────────────────────────────────
     const [createdMonitorId, setCreatedMonitorId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    // State for existing monitors
-    const [existingMonitors, setExistingMonitors] = useState<Array<{
-        id: string;
-        displayName: string;
-        description: string;
-    }>>([]);
+    // ── Existing monitors ─────────────────────────────────────────────────────
+    const [existingMonitors, setExistingMonitors] = useState<Array<{ id: string; displayName: string; description: string }>>([]);
     const [loadingMonitors, setLoadingMonitors] = useState(true);
 
-    const TemplatesSkeleton = () => (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-            {[...Array(3)].map((_, i) => (
-                <div key={i} className="border-l-4 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-6 space-y-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-                        <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
-                    </div>
-                    <div className="space-y-2">
-                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-4/5"></div>
-                    </div>
-                    <div className="space-y-2">
-                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
-                        <div className="flex flex-wrap gap-1">
-                            {[...Array(3)].map((_, j) => (
-                                <div key={j} className="h-5 bg-gray-200 dark:bg-gray-700 rounded-full w-28"></div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="h-9 bg-gray-200 dark:bg-gray-700 rounded w-full mt-2"></div>
-                </div>
-            ))}
-        </div>
-    );
-
-    // Fetch existing monitors on mount - only if user is authenticated
     useEffect(() => {
-        const fetchExistingMonitors = async () => {
-            // Don't fetch if no accounts are available (not authenticated)
-            if (accounts.length === 0) {
-                setLoadingMonitors(false);
-                return;
-            }
-
+        if (accounts.length === 0) { setLoadingMonitors(false); return; }
+        (async () => {
             try {
-                setLoadingMonitors(true);
-                const response = await request<ApiResponse<Array<{ id: string; displayName: string; description: string }> | { id: string; displayName: string; description: string }>>(
-                    MONITOR_CONFIGURATION_ENDPOINT,
-                    {
-                        method: 'GET',
-                        headers: { 'Content-Type': 'application/json' }
-                    }
+                const r = await request<ApiEnvelope<Array<{ id: string; displayName: string; description: string }>>>(
+                    MONITOR_CONFIGURATION_ENDPOINT, { method: 'GET' }
                 );
-
-                // Unwrap ApiResponseWithCorrelation → response.data is the ApiResponse envelope, response.data.data is the actual monitors
-                if (response?.data?.data) {
-                    // Handle both array response and single object response
-                    const monitorsArray = Array.isArray(response.data.data) ? response.data.data : [response.data.data];
-
-                    // Store monitors with just id, displayName, and description
-                    // We'll check by displayName instead of resource types
-                    setExistingMonitors(monitorsArray);
+                if (r?.data?.data) {
+                    const d = r.data.data;
+                    setExistingMonitors(Array.isArray(d) ? d : [d]);
                 }
-            } catch (err) {
-                console.error('Failed to fetch existing monitors:', err);
-            } finally {
-                setLoadingMonitors(false);
-            }
-        };
+            } finally { setLoadingMonitors(false); }
+        })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [accounts.length]);
 
-        fetchExistingMonitors();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [accounts.length]); // Re-run when authentication state changes
+    const monitorExistsForTemplate = useCallback((id: string) =>
+        existingMonitors.find(m =>
+            m.displayName === MONITOR_TEMPLATES.find(t => t.id === id)?.title &&
+            m.description?.includes('(IntuneAssistant)')
+        ),
+    [existingMonitors]);
 
-    // Define templates first
-    const monitorTemplates: MonitorTemplate[] = [
-        {
-            id: 'compliance-policies',
-            title: 'Compliance Policies Monitor',
-            description: 'Monitor all device compliance policies across Android, iOS, macOS, and Windows platforms.',
-            icon: Shield,
-            gradient: 'from-blue-500 to-cyan-500',
-            bgGradient: 'from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20',
-            borderColor: 'border-blue-200 dark:border-blue-800',
-            resources: [
-                'microsoft.intune.devicecompliancepolicyandroid',
-                'microsoft.intune.devicecompliancepolicyandroiddeviceowner',
-                'microsoft.intune.devicecompliancepolicyandroidworkprofile',
-                'microsoft.intune.devicecompliancepolicyios',
-                'microsoft.intune.devicecompliancepolicymacos',
-                'microsoft.intune.devicecompliancepolicywindows10'
-            ]
-        },
-        {
-            id: 'windows10-config-policies',
-            title: 'Windows Configuration Policies Monitor',
-            description: 'Monitor all device configuration policies for Windows platforms.',
-            icon: LaptopIcon,
-            gradient: 'from-yellow-500 to-amber-500',
-            bgGradient: 'from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20',
-            borderColor: 'border-yellow-200 dark:border-yellow-800',
-            resources: [
-                "microsoft.intune.deviceconfigurationadministrativetemplatepolicywindows10",
-                "microsoft.intune.deviceconfigurationcustompolicywindows10",
-                "microsoft.intune.deviceconfigurationdefenderforendpointonboardingpolicywindows10",
-                "microsoft.intune.deviceconfigurationdeliveryoptimizationpolicywindows10",
-                "microsoft.intune.deviceconfigurationdomainjoinpolicywindows10",
-                "microsoft.intune.deviceconfigurationemailprofilepolicywindows10",
-                "microsoft.intune.deviceconfigurationendpointprotectionpolicywindows10",
-                "microsoft.intune.deviceconfigurationfirmwareinterfacepolicywindows10",
-                "microsoft.intune.deviceconfigurationhealthmonitoringconfigurationpolicywindows10",
-                "microsoft.intune.deviceconfigurationidentityprotectionpolicywindows10",
-                "microsoft.intune.deviceconfigurationimportedpfxcertificatepolicywindows10",
-                "microsoft.intune.deviceconfigurationkioskpolicywindows10",
-                "microsoft.intune.deviceconfigurationnetworkboundarypolicywindows10",
-                "microsoft.intune.deviceconfigurationpkcscertificatepolicywindows10",
-                "microsoft.intune.deviceconfigurationpolicywindows10",
-                "microsoft.intune.deviceconfigurationscepcertificatepolicywindows10",
-                "microsoft.intune.deviceconfigurationsecureassessmentpolicywindows10",
-                "microsoft.intune.deviceconfigurationsharedmultidevicepolicywindows10",
-                "microsoft.intune.deviceconfigurationtrustedcertificatepolicywindows10",
-                "microsoft.intune.deviceconfigurationvpnpolicywindows10",
-                "microsoft.intune.deviceconfigurationwindowsteampolicywindows10",
-                "microsoft.intune.deviceconfigurationwirednetworkpolicywindows10",
-            ]
-        },
-        {
-            id: 'role-assignments',
-            title: 'Role Assignments Monitor',
-            description: 'Monitor Intune role assignments and administrative permissions.',
-            icon: Shield,
-            gradient: 'from-lime-500 to-green-500',
-            bgGradient: 'from-lime-50 to-green-50 dark:from-lime-900/20 dark:to-green-900/20',
-            borderColor: 'border-lime-200 dark:border-lime-800',
-            resources: [
-                'microsoft.intune.roleassignment'
-            ]
-        },
-        {
-            id: 'assignment-filters',
-            title: 'Assignment Filters Monitor',
-            description: 'Monitor Intune assignment filters.',
-            icon: Shield,
-            gradient: 'from-purple-500 to-pink-500',
-            bgGradient: 'from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20',
-            borderColor: 'border-purple-200 dark:border-purple-800',
-            resources: [
-                'microsoft.intune.deviceandappmanagementassignmentfilter'
-            ]
-        },
-        {
-            id: 'enrollment-status-page',
-            title: 'Enrollment Status Page Monitor',
-            description: 'Monitor Windows 10 Enrollment Status Page configurations.',
-            icon: Shield,
-            gradient: 'from-blue-500 to-indigo-500',
-            bgGradient: 'from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20',
-            borderColor: 'border-blue-200 dark:border-blue-800',
-            resources: [
-                'microsoft.intune.deviceenrollmentstatuspagewindows10'
-            ]
-        },
-        {
-            id: 'enrollment-platform-restrictions',
-            title: 'Platform Restrictions Monitor',
-            description: 'Monitor device enrollment platform restriction policies.',
-            icon: Shield,
-            gradient: 'from-cyan-500 to-teal-500',
-            bgGradient: 'from-cyan-50 to-teal-50 dark:from-cyan-900/20 dark:to-teal-900/20',
-            borderColor: 'border-cyan-200 dark:border-cyan-800',
-            resources: [
-                'microsoft.intune.deviceenrollmentplatformrestriction'
-            ]
+    // ── Gallery filtering ─────────────────────────────────────────────────────
+
+    const filteredTemplates = useMemo(() => {
+        let list = MONITOR_TEMPLATES;
+        if (activeCategory !== 'all' && activeCategory !== 'custom')
+            list = list.filter(t => t.category === activeCategory);
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase();
+            list = list.filter(t =>
+                t.title.toLowerCase().includes(q) ||
+                t.description.toLowerCase().includes(q) ||
+                t.resources.some(r => r.toLowerCase().includes(q))
+            );
         }
-    ];
+        return list;
+    }, [activeCategory, searchQuery]);
 
-    // Memoize monitor existence checks
-    const monitorExistenceMap = useMemo(() => {
-        const map = new Map<string, { exists: boolean; monitor?: { id: string; displayName: string; description: string } }>();
+    // ── Custom resource picker helpers ────────────────────────────────────────
 
-        monitorTemplates.forEach(template => {
-            const existingMonitor = existingMonitors.find(monitor =>
-                monitor.displayName === template.title &&
-                monitor.description?.includes('(IntuneAssistant)')
-            );
+    const filteredResourceCats = useMemo(() => {
+        if (!resourceSearch) return CUSTOM_RESOURCE_CATEGORIES;
+        const q = resourceSearch.toLowerCase();
+        return CUSTOM_RESOURCE_CATEGORIES.map(c => ({
+            ...c,
+            resources: c.resources.filter(r => r.toLowerCase().includes(q) || fmtResource(r).toLowerCase().includes(q)),
+        })).filter(c => c.resources.length > 0);
+    }, [resourceSearch]);
 
-            map.set(template.id, {
-                exists: !!existingMonitor,
-                monitor: existingMonitor
-            });
-        });
+    const toggleResource = (r: string) =>
+        setCustomResources(prev => prev.includes(r) ? prev.filter(x => x !== r) : [...prev, r]);
 
-        return map;
-    }, [existingMonitors]);
-
-    // Check if a monitor with matching displayName and IntuneAssistant description already exists
-    const checkMonitorExists = (template: MonitorTemplate): boolean => {
-        return monitorExistenceMap.get(template.id)?.exists ?? false;
+    const toggleCatAll = (resources: string[]) => {
+        const all = resources.every(r => customResources.includes(r));
+        setCustomResources(prev => all
+            ? prev.filter(r => !resources.includes(r))
+            : [...new Set([...prev, ...resources])]
+        );
     };
 
-    // Find the existing monitor with matching displayName and IntuneAssistant description
-    const findExistingMonitor = (template: MonitorTemplate) => {
-        return monitorExistenceMap.get(template.id)?.monitor;
+    // ── Name helpers ──────────────────────────────────────────────────────────
+
+    const sanitizeName = (n: string) => n.replace(/[^a-zA-Z0-9 ]/g, '').trim().substring(0, 32);
+    const validateName = (n: string): string | null => {
+        const s = sanitizeName(n);
+        if (s.length < 8) return 'Name must be at least 8 characters';
+        return null;
     };
 
-    const createSnapshot = async (template: MonitorTemplate, name: string, description: string) => {
+    // ── Review: group snapshot resources by resourceType ──────────────────────
+
+    const groupedResources = useMemo(() => {
+        if (!currentSnapshot) return {};
+        const q = reviewSearch.toLowerCase();
+        const filtered = q
+            ? currentSnapshot.resources.filter(r =>
+                r.displayName.toLowerCase().includes(q) ||
+                r.resourceType.toLowerCase().includes(q) ||
+                fmtResource(r.resourceType).toLowerCase().includes(q)
+            )
+            : currentSnapshot.resources;
+
+        return filtered.reduce<Record<string, SnapshotResource[]>>((acc, res) => {
+            const key = res.resourceType;
+            if (!acc[key]) acc[key] = [];
+            acc[key].push(res);
+            return acc;
+        }, {});
+    }, [currentSnapshot, reviewSearch]);
+
+    // ── Wizard handlers ───────────────────────────────────────────────────────
+
+    const handleSelectTemplate = (template: MonitorTemplate) => {
+        setSelectedTemplate(template);
+        setIsCustom(false);
+        const base = sanitizeName(template.title);
+        setMonitorName(base.length >= 8 ? base : `${base} Monitor`.substring(0, 32));
+        setMonitorDescription(template.description);
+        setStep('configure');
+    };
+
+    const handleStartCustom = () => {
+        setSelectedTemplate(null);
+        setIsCustom(true);
+        setCustomResources([]);
+        setMonitorName('');
+        setMonitorDescription('');
+        setStep('configure');
+    };
+
+    const handleCreateSnapshot = async () => {
+        const resources = isCustom ? customResources : (selectedTemplate?.resources ?? []);
+        if (!monitorName || !resources.length) return;
+        const validErr = validateName(monitorName);
+        if (validErr) { setError(validErr); setStep('error'); return; }
+
+        const safeName = sanitizeName(monitorName);
+        setStep('creating');
+        setError(null);
+
         try {
-            setStep('creating');
-            setError(null);
-
-            const snapshotBody = {
-                displayName: name,
-                description: description,
-                resources: template.resources
-            };
-
-            const response = await request<ApiResponse<SnapshotJob>>(
+            const resp = await request<ApiEnvelope<SnapshotJob>>(
                 MONITOR_CONFIGURATION_SNAPSHOTS,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(snapshotBody)
-                }
+                { method: 'POST', body: JSON.stringify({ displayName: safeName, description: monitorDescription, resources }) }
             );
-
-            // Unwrap ApiResponseWithCorrelation → response.data is the ApiResponse envelope, response.data.data is the SnapshotJob
-            const envelope = response?.data;
-            if (envelope?.data?.id) {
-                setSnapshotJobId(envelope.data.id);
-                setSnapshotStatus(String(envelope.data.status));
-                setStep('polling');
-                startPolling(envelope.data.id);
-            } else {
-                throw new Error('Failed to create snapshot - no job ID returned');
-            }
-        } catch (err) {
-            console.error('Error creating snapshot:', err);
-            setError(err instanceof Error ? err.message : 'Failed to create snapshot');
+            const job = resp?.data?.data;
+            if (!job?.id) throw new Error('No snapshot job ID returned');
+            setCurrentJob(job);
+            setSnapshotStatus(job.status);
+            setStep('polling');
+            startPolling(job.id);
+        } catch (e) {
+            setError(e instanceof Error ? e.message : 'Failed to create snapshot');
             setStep('error');
         }
     };
 
-    const startPolling = async (jobId: string) => {
-        const maxAttempts = 60; // 10 minutes maximum (60 * 10 seconds)
+    const startPolling = (jobId: string) => {
+        const maxAttempts = 60;
         let attempts = 0;
 
         const poll = async () => {
+            attempts++;
+            setPollingAttempts(attempts);
+            setCountdown(10);
+
             try {
-                attempts++;
-                setPollingAttempts(attempts);
-                setCountdown(10); // Reset countdown
+                const r = await request<ApiEnvelope<SnapshotJob>>(MONITOR_SNAPSHOTS_JOB_BY_ID(jobId), { method: 'GET' });
+                const job = r?.data?.data;
+                if (!job) throw new Error('No job data returned');
 
-                const response = await request<ApiResponse<SnapshotJob>>(
-                    `${MONITOR_CONFIGURATION_SNAPSHOTS_JOBS}/${jobId}`,
-                    {
-                        method: 'GET',
-                        headers: { 'Content-Type': 'application/json' }
-                    }
-                );
+                setSnapshotStatus(job.status);
+                setCurrentJob(job);
 
-                // Unwrap ApiResponseWithCorrelation
-                const envelope = response?.data;
-                if (envelope?.data) {
-                    const jobData = envelope.data;
-                    const statusStr = String(jobData.status);
-                    setSnapshotStatus(statusStr);
-
-                    if ((statusStr === 'succeeded' || statusStr === 'partiallySuccessful') && jobData.snapshotId) {
-                        // Snapshot completed successfully or partially successfully
-                        await fetchSnapshotAndCreateMonitor(jobData.snapshotId, monitorName, monitorDescription);
-                    } else if (statusStr === 'failed') {
-                        const errorMsg = jobData.error ? String(jobData.error) : 'Snapshot creation failed';
-                        throw new Error(errorMsg);
-                    } else if (attempts >= maxAttempts) {
-                        throw new Error('Snapshot creation timed out');
-                    } else {
-                        // Start countdown and continue polling after 10 seconds
-                        let secondsLeft = 10;
-                        const countdownInterval = setInterval(() => {
-                            secondsLeft--;
-                            setCountdown(secondsLeft);
-                            if (secondsLeft <= 0) {
-                                clearInterval(countdownInterval);
-                            }
-                        }, 1000);
-
-                        setTimeout(() => {
-                            clearInterval(countdownInterval);
-                            poll();
-                        }, POLLING_INTERVAL);
-                    }
+                if ((job.status === 'succeeded' || job.status === 'partiallySuccessful') && job.snapshotId) {
+                    // Fetch the snapshot from /monitor/snapshots/{snapshotId} and go to review
+                    await fetchSnapshotForReview(job.snapshotId);
+                } else if (job.status === 'failed') {
+                    throw new Error(job.error ? String(job.error) : 'Snapshot creation failed');
+                } else if (attempts >= maxAttempts) {
+                    throw new Error('Snapshot creation timed out after 10 minutes');
+                } else {
+                    // Count down and re-poll
+                    let s = 10;
+                    const iv = setInterval(() => { s--; setCountdown(s); if (s <= 0) clearInterval(iv); }, 1000);
+                    setTimeout(() => { clearInterval(iv); poll(); }, POLLING_INTERVAL);
                 }
-            } catch (err) {
-                console.error('Polling error:', err);
-                setError(err instanceof Error ? err.message : 'Polling failed');
+            } catch (e) {
+                setError(e instanceof Error ? e.message : 'Polling failed');
                 setStep('error');
             }
         };
@@ -391,510 +594,616 @@ export default function AddMonitorPage() {
         poll();
     };
 
-    const fetchSnapshotAndCreateMonitor = async (snapshotId: string, name: string, description: string) => {
+    /**
+     * Fetch the completed snapshot from /monitor/snapshots/{snapshotId} and navigate
+     * to the review step so the user can see exactly what was captured.
+     */
+    const fetchSnapshotForReview = async (snapshotId: string) => {
         try {
-            // Fetch the complete snapshot data
-            const snapshotResponse = await request<ApiResponse<Snapshot>>(
-                `${MONITOR_CONFIGURATION_SNAPSHOTS}/${snapshotId}`,
-                {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                }
+            const r = await request<ApiEnvelope<Snapshot>>(
+                MONITOR_SNAPSHOT_BY_ID(snapshotId),
+                { method: 'GET' }
             );
-
-            // Unwrap ApiResponseWithCorrelation → snapshotResponse.data is the envelope, snapshotResponse.data.data is the Snapshot
-            if (snapshotResponse?.data?.data) {
-                // Create monitor using the snapshot data
-                await createMonitor(snapshotResponse.data.data, name, description);
-            } else {
-                throw new Error('Failed to fetch snapshot data');
-            }
-        } catch (err) {
-            console.error('Error fetching snapshot:', err);
-            setError(err instanceof Error ? err.message : 'Failed to fetch snapshot');
+            const snap = r?.data?.data;
+            if (!snap) throw new Error('Could not load snapshot data');
+            setCurrentSnapshot(snap);
+            setStep('review');
+        } catch (e) {
+            setError(e instanceof Error ? e.message : 'Failed to load snapshot');
             setStep('error');
         }
     };
 
-    const createMonitor = async (snapshot: Snapshot, name: string, description: string) => {
+    /**
+     * User has reviewed the snapshot resources and clicked "Create Monitor".
+     * POST to /monitor/configuration with the snapshot as baseline.
+     */
+    const handleConfirmCreateMonitor = async () => {
+        if (!currentSnapshot) return;
+        setStep('submitting');
+
         try {
-            // Truncate resource displayNames to meet API requirements (max 128 chars)
-            const processedResources = snapshot.resources.map(resource => ({
-                ...resource,
-                displayName: resource.displayName.length > 128
-                    ? resource.displayName.substring(0, 128)
-                    : resource.displayName
+            const processed = currentSnapshot.resources.map(res => ({
+                ...res,
+                displayName: res.displayName.substring(0, 128),
             }));
 
-            // Prefix description with (IntuneAssistant) to mark as created by this app
-            const prefixedDescription = `(IntuneAssistant) ${description}`;
-
-            const monitorBody = {
-                displayName: name,
-                description: prefixedDescription,
-                baseline: {
-                    displayName: snapshot.displayName,
-                    description: snapshot.description,
-                    resources: processedResources
-                }
-            };
-
-            console.log('Creating monitor with body:', JSON.stringify(monitorBody, null, 2));
-
-            const response = await request<ApiResponse<{
-                id: string;
-                displayName: string;
-                description: string;
-                [key: string]: unknown;
-            }>>(
+            const monitorResp = await request<ApiEnvelope<{ id: string }>>(
                 MONITOR_CONFIGURATION_ENDPOINT,
                 {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(monitorBody)
+                    body: JSON.stringify({
+                        displayName: sanitizeName(monitorName),
+                        description: `(IntuneAssistant) ${monitorDescription}`,
+                        baseline: {
+                            displayName: currentSnapshot.displayName,
+                            description: currentSnapshot.description,
+                            resources: processed,
+                        },
+                    }),
                 }
             );
 
-            console.log('Full API Response:', response);
-
-            // Unwrap ApiResponseWithCorrelation → response.data is the ApiResponse envelope
-            const envelope = response?.data;
-            console.log('Envelope status:', envelope?.status);
-            console.log('Envelope message:', envelope?.message);
-            console.log('Envelope data:', envelope?.data);
-
-            // Check if we have a response with data
-            if (envelope?.data) {
-                // The data object should contain the id property
-                const responseData = envelope.data as Record<string, unknown>;
-                const monitorId = typeof responseData.id === 'string' ? responseData.id : null;
-
-                if (monitorId) {
-                    console.log('Monitor created successfully with ID:', monitorId);
-                    setCreatedMonitorId(monitorId);
-                    setStep('success');
-                } else {
-                    console.error('No ID found in envelope.data. Full data object:', responseData);
-                    console.error('Available keys in data:', Object.keys(responseData));
-                    throw new Error(`Failed to create monitor - no ID returned. Response message: ${envelope.message || 'Unknown'}`);
-                }
-            } else {
-                console.error('No data property in envelope. Full envelope:', envelope);
-                throw new Error('Failed to create monitor - no data in response');
-            }
-        } catch (err) {
-            console.error('Error creating monitor:', err);
-            const errorMessage = err instanceof Error ? err.message : 'Failed to create monitor';
-            setError(errorMessage);
+            const mid = monitorResp?.data?.data?.id;
+            if (!mid) throw new Error('No monitor ID returned');
+            setCreatedMonitorId(mid);
+            setStep('success');
+        } catch (e) {
+            setError(e instanceof Error ? e.message : 'Failed to create monitor');
             setStep('error');
         }
     };
 
-    const sanitizeDisplayName = (name: string): string => {
-        // Remove special characters, keep only alphanumeric and spaces
-        const sanitized = name.replace(/[^a-zA-Z0-9 ]/g, '');
-        // Trim and limit to 32 characters
-        return sanitized.trim().substring(0, 32);
+    const resetToGallery = () => {
+        setStep('gallery');
+        setSelectedTemplate(null);
+        setIsCustom(false);
+        setError(null);
+        setPollingAttempts(0);
+        setCustomResources([]);
+        setCurrentSnapshot(null);
+        setCurrentJob(null);
+        setReviewSearch('');
     };
 
-    const validateDisplayName = (name: string): string | null => {
-        const sanitized = sanitizeDisplayName(name);
-        if (sanitized.length < 8) {
-            return 'Display name must be at least 8 characters long';
-        }
-        if (sanitized.length > 32) {
-            return 'Display name must be at most 32 characters long';
-        }
-        if (!/^[a-zA-Z0-9 ]+$/.test(sanitized)) {
-            return 'Display name can only contain letters, numbers, and spaces';
-        }
-        return null;
-    };
-
-    const handleTemplateSelect = (template: MonitorTemplate) => {
-        setSelectedTemplate(template);
-        // Create a valid display name (no special characters, 8-32 chars)
-        const baseName = template.title.replace(/[^a-zA-Z0-9 ]/g, '');
-        // Use just the base name without date to keep it clean
-        // User can modify it in the configure step if needed
-        const displayName = baseName.substring(0, 32);
-        setMonitorName(displayName);
-        setMonitorDescription(template.description);
-        setStep('configure');
-    };
-
-    const handleCreateMonitor = () => {
-        if (!selectedTemplate || !monitorName) return;
-
-        // Validate display name
-        const validationError = validateDisplayName(monitorName);
-        if (validationError) {
-            setError(validationError);
-            setStep('error');
-            return;
-        }
-
-        // Sanitize the display name to ensure it meets API requirements
-        const sanitizedName = sanitizeDisplayName(monitorName);
-        createSnapshot(selectedTemplate, sanitizedName, monitorDescription);
-    };
-
-    const handleViewMonitor = () => {
-        if (createdMonitorId) {
-            router.push(`/monitor/details/${createdMonitorId}`);
-        }
-    };
+    // ── Render ────────────────────────────────────────────────────────────────
 
     return (
-        <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
-            {/* Header */}
-            <div>
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">
-                    Add Configuration Monitor
-                </h1>
-                <p className="text-gray-600 dark:text-gray-300 mt-2">
-                    Create a new monitor to track configuration drift in your Intune environment
-                </p>
+        <div className="space-y-6">
+            {/* Page header */}
+            <div className="flex items-start justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+                        <Camera className="h-6 w-6" />
+                        Create Configuration Monitor
+                    </h1>
+                    <p className="text-muted-foreground mt-1">
+                        Track configuration drift using templates or a fully custom setup.
+                    </p>
+                </div>
+                {step !== 'gallery' && step !== 'submitting' && step !== 'success' && (
+                    <Button variant="ghost" size="sm" onClick={resetToGallery} className="shrink-0">
+                        <ChevronLeft className="h-4 w-4 mr-1" />Back to gallery
+                    </Button>
+                )}
             </div>
 
-            {/* Step 1: Select Template */}
-            {step === 'select' && (
-                <>
-                    {/* Show message if not authenticated */}
-                    {accounts.length === 0 && !loadingMonitors && (
-                        <Card className="bg-white dark:bg-gray-800 border border-yellow-200 dark:border-yellow-800">
-                            <CardContent className="pt-6">
-                                <div className="text-center py-12">
-                                    <AlertCircle className="h-12 w-12 mx-auto text-yellow-500 mb-4" />
-                                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                                        Authentication Required
-                                    </h3>
-                                    <p className="text-gray-600 dark:text-gray-300">
-                                        Please sign in to create monitors
-                                    </p>
+            {/* Step indicator */}
+            <StepIndicator step={step} />
+
+            {/* ══════════════════════════════════════════════════════════════ */}
+            {/* STEP 1: Gallery                                                */}
+            {/* ══════════════════════════════════════════════════════════════ */}
+            {step === 'gallery' && (
+                <div className="space-y-5">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        {/* Category tabs */}
+                        <div className="flex items-center gap-1 flex-wrap">
+                            {(['all','intune','entra','exchange'] as TemplateCategory[]).map(cat => {
+                                const meta = CATEGORY_META[cat];
+                                const Icon = meta.icon;
+                                return (
+                                    <Button key={cat} variant={activeCategory === cat ? 'default' : 'outline'}
+                                        size="sm" onClick={() => setActiveCategory(cat)} className="gap-1.5">
+                                        <Icon className="h-3.5 w-3.5" />
+                                        {meta.label}
+                                        {cat !== 'all' && cat !== 'custom' && (
+                                            <Badge variant={activeCategory === cat ? 'secondary' : 'outline'} className="ml-1 text-[10px] px-1.5 py-0 h-4">
+                                                {MONITOR_TEMPLATES.filter(t => t.category === cat).length}
+                                            </Badge>
+                                        )}
+                                    </Button>
+                                );
+                            })}
+                        </div>
+                        {/* Search */}
+                        <div className="relative flex-1 max-w-sm">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input placeholder="Search templates…" value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)} className="pl-9 pr-9 h-9" />
+                            {searchQuery && (
+                                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                                    <X className="h-4 w-4" />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {loadingMonitors && accounts.length > 0 && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-pulse">
+                            {[...Array(6)].map((_, i) => <div key={i} className="h-48 rounded-xl bg-muted" />)}
+                        </div>
+                    )}
+
+                    {!loadingMonitors && (
+                        <>
+                            {filteredTemplates.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-16 gap-3 text-muted-foreground">
+                                    <Search className="h-10 w-10 opacity-30" />
+                                    <p className="font-medium">No templates found for &ldquo;{searchQuery}&rdquo;</p>
+                                    <Button variant="ghost" size="sm" onClick={() => setSearchQuery('')}>Clear search</Button>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {filteredTemplates.map(template => {
+                                        const Icon = template.icon;
+                                        const existing = monitorExistsForTemplate(template.id);
+                                        const disabled = !!existing || !!template.comingSoon;
+                                        return (
+                                            <Card key={template.id} className={cn(
+                                                'group relative overflow-hidden transition-all duration-200 border',
+                                                !disabled && 'cursor-pointer hover:shadow-md hover:-translate-y-0.5',
+                                                disabled && 'opacity-60 cursor-default',
+                                            )} onClick={() => !disabled && handleSelectTemplate(template)}>
+                                                <div className={cn('h-1 w-full bg-gradient-to-r', template.gradient)} />
+                                                <CardHeader className="pb-3">
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className={cn('p-2.5 rounded-lg bg-gradient-to-br text-white shadow-sm', template.gradient)}>
+                                                            <Icon className="h-5 w-5" />
+                                                        </div>
+                                                        <div className="flex gap-1.5 flex-wrap justify-end">
+                                                            <Badge variant="outline" className="text-[10px] uppercase tracking-wide">{template.category}</Badge>
+                                                            {template.comingSoon && <Badge className="bg-muted text-muted-foreground text-[10px]">Coming soon</Badge>}
+                                                            {existing && (
+                                                                <Badge className="bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 text-[10px] gap-1">
+                                                                    <CheckCircle className="h-3 w-3" />Active
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <CardTitle className="text-base mt-2">{template.title}</CardTitle>
+                                                    <CardDescription className="text-sm leading-relaxed">{template.description}</CardDescription>
+                                                </CardHeader>
+                                                <CardContent className="pb-4 space-y-3">
+                                                    {template.resources.length > 0 && (
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {template.resources.slice(0, 3).map((r, i) => (
+                                                                <Badge key={i} variant="secondary" className="text-[10px] font-mono">
+                                                                    {r.split('.').pop()?.substring(0, 22)}…
+                                                                </Badge>
+                                                            ))}
+                                                            {template.resources.length > 3 && (
+                                                                <Badge variant="secondary" className="text-[10px]">+{template.resources.length - 3}</Badge>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                    {existing ? (
+                                                        <Button size="sm" variant="outline" className="w-full text-green-600 border-green-200 hover:bg-green-50"
+                                                            onClick={e => { e.stopPropagation(); router.push(`/monitor/details/${existing.id}`); }}>
+                                                            View Monitor <ArrowRight className="h-3 w-3 ml-1.5" />
+                                                        </Button>
+                                                    ) : template.comingSoon ? (
+                                                        <div className="text-xs text-muted-foreground text-center py-1">More templates coming soon</div>
+                                                    ) : (
+                                                        <Button size="sm" className={cn('w-full bg-gradient-to-r text-white opacity-0 group-hover:opacity-100 transition-opacity', template.gradient)}>
+                                                            Use Template <ArrowRight className="h-3 w-3 ml-1.5" />
+                                                        </Button>
+                                                    )}
+                                                </CardContent>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {/* Enterprise: Custom Monitor */}
+                            {(activeCategory === 'all' || activeCategory === 'custom') && !searchQuery && (
+                                <div className="mt-2">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="h-px flex-1 bg-border" />
+                                        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Enterprise</span>
+                                        <div className="h-px flex-1 bg-border" />
+                                    </div>
+                                    <Card className={cn(
+                                        'relative overflow-hidden border-2 transition-all duration-200',
+                                        hasEnterpriseLicense
+                                            ? 'border-amber-200 dark:border-amber-800 cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover:border-amber-400'
+                                            : 'border-dashed border-muted opacity-60 cursor-not-allowed',
+                                    )} onClick={() => hasEnterpriseLicense && handleStartCustom()}>
+                                        <div className="h-1 w-full bg-gradient-to-r from-amber-400 to-yellow-500" />
+                                        <CardHeader className="pb-3">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="p-2.5 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-white shadow-sm">
+                                                    <Wand2 className="h-5 w-5" />
+                                                </div>
+                                                <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 gap-1 text-[10px]">
+                                                    <Crown className="h-3 w-3" />Enterprise
+                                                </Badge>
+                                            </div>
+                                            <CardTitle className="text-base mt-2">Custom Monitor</CardTitle>
+                                            <CardDescription>
+                                                {hasEnterpriseLicense
+                                                    ? 'Pick any combination of resource types and build a monitor tailored to your exact needs.'
+                                                    : 'Upgrade to Enterprise to create fully custom monitors with any resource type combination.'}
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="pb-4">
+                                            {hasEnterpriseLicense ? (
+                                                <Button size="sm" className="w-full bg-gradient-to-r from-amber-400 to-yellow-500 text-white">
+                                                    <Sparkles className="h-3.5 w-3.5 mr-1.5" />Build Custom Monitor
+                                                </Button>
+                                            ) : (
+                                                <Button size="sm" variant="outline" disabled className="w-full">
+                                                    <Crown className="h-3.5 w-3.5 mr-1.5" />Enterprise Required
+                                                </Button>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            )}
+
+            {/* ══════════════════════════════════════════════════════════════ */}
+            {/* STEP 2: Configure                                              */}
+            {/* ══════════════════════════════════════════════════════════════ */}
+            {step === 'configure' && (
+                <div className="max-w-3xl mx-auto">
+                    <div className={cn('grid gap-6', isCustom ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1')}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-lg">
+                                    {isCustom
+                                        ? <><Wand2 className="h-5 w-5 text-amber-500" />Custom Monitor</>
+                                        : <><BookTemplate className="h-5 w-5" />{selectedTemplate?.title}</>
+                                    }
+                                </CardTitle>
+                                <CardDescription>Configure the details for your new monitor.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-5">
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="mname">Monitor Name <span className="text-destructive">*</span></Label>
+                                    <Input id="mname" value={monitorName} onChange={e => setMonitorName(e.target.value)}
+                                        placeholder="e.g. Compliance Baseline Monitor" maxLength={32} />
+                                    <div className="flex justify-between text-xs text-muted-foreground">
+                                        <span className={sanitizeName(monitorName).length < 8 ? 'text-destructive' : 'text-green-600'}>
+                                            {sanitizeName(monitorName).length}/32 chars {sanitizeName(monitorName).length < 8 && '(min 8)'}
+                                        </span>
+                                        <span>Letters, numbers & spaces only</span>
+                                    </div>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="mdesc">Description</Label>
+                                    <Textarea id="mdesc" value={monitorDescription} onChange={e => setMonitorDescription(e.target.value)}
+                                        placeholder="Optional description" rows={3} />
+                                </div>
+
+                                {!isCustom && selectedTemplate && (
+                                    <div className="rounded-lg border bg-muted/40 p-3 space-y-2">
+                                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                            {selectedTemplate.resources.length} Resource Types
+                                        </p>
+                                        <div className="space-y-1 max-h-40 overflow-y-auto">
+                                            {selectedTemplate.resources.map((r, i) => (
+                                                <div key={i} className="flex items-center gap-2 text-xs">
+                                                    <CheckCircle className="h-3 w-3 text-green-500 shrink-0" />
+                                                    <span className="font-mono text-muted-foreground truncate">{r}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {isCustom && (
+                                    <div className={cn('rounded-lg border p-3 text-sm flex items-center gap-2',
+                                        customResources.length === 0
+                                            ? 'border-destructive/30 bg-destructive/5 text-destructive'
+                                            : 'border-green-200 bg-green-50 dark:bg-green-900/10 text-green-700 dark:text-green-400')}>
+                                        {customResources.length === 0
+                                            ? <><AlertCircle className="h-4 w-4 shrink-0" />Select at least one resource type on the right.</>
+                                            : <><CheckCircle className="h-4 w-4 shrink-0" />{customResources.length} resource type{customResources.length !== 1 ? 's' : ''} selected.</>
+                                        }
+                                    </div>
+                                )}
+
+                                <div className="flex gap-3 pt-1">
+                                    <Button variant="outline" className="flex-1" onClick={() => setStep('gallery')}>
+                                        <ChevronLeft className="h-4 w-4 mr-1" />Back
+                                    </Button>
+                                    <Button className="flex-1"
+                                        disabled={!monitorName.trim() || !!validateName(monitorName) || (isCustom && customResources.length === 0)}
+                                        onClick={handleCreateSnapshot}>
+                                        Create Snapshot & Review
+                                        <ArrowRight className="h-4 w-4 ml-1.5" />
+                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>
-                    )}
 
-                    {loadingMonitors && accounts.length > 0 && <TemplatesSkeleton />}
-
-                    {!loadingMonitors && accounts.length > 0 && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {monitorTemplates.map((template) => {
-                                const Icon = template.icon;
-                                const alreadyExists = checkMonitorExists(template);
-                                const existingMonitor = findExistingMonitor(template);
-
-                                return (
-                                    <Card
-                                        key={template.id}
-                                        className={`border-l-4 ${template.borderColor} bg-white dark:bg-gray-800 ${
-                                            alreadyExists 
-                                                ? 'opacity-75 cursor-not-allowed' 
-                                                : 'cursor-pointer hover:shadow-lg'
-                                        }`}
-                                        onClick={() => !alreadyExists && handleTemplateSelect(template)}
-                                    >
-                                        <CardHeader>
-                                            <div className="flex items-center justify-between mb-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`p-3 rounded-xl bg-gradient-to-br ${template.gradient} text-white shadow-lg`}>
-                                                        <Icon className="h-6 w-6" />
-                                                    </div>
-                                                    <Badge variant="outline" className="font-medium">
-                                                        TEMPLATE
-                                                    </Badge>
-                                                </div>
-                                                {alreadyExists && (
-                                                    <div className="flex items-center gap-2 bg-green-100 dark:bg-green-900/20 px-3 py-1 rounded-full">
-                                                        <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-                                                        <span className="text-xs font-medium text-green-600 dark:text-green-400">
-                                                            EXISTS
-                                                        </span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <CardTitle className="text-xl">{template.title}</CardTitle>
-                                            <CardDescription className="text-base">
-                                                {template.description}
-                                            </CardDescription>
-                                        </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-2 mb-4">
-                                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                            Monitors {template.resources.length} resource types:
-                                        </p>
-                                        <div className="flex flex-wrap gap-1">
-                                            {template.resources.slice(0, 3).map((resource, idx) => (
-                                                <Badge key={idx} variant="secondary" className="text-xs">
-                                                    {resource.split('.').pop()?.replace('devicecompliancepolicy', '')}
+                        {/* Custom resource picker */}
+                        {isCustom && (
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-base flex items-center justify-between">
+                                        Resource Types
+                                        <Badge variant="secondary">{customResources.length} selected</Badge>
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-3">
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                                        <Input placeholder="Search resources…" value={resourceSearch}
+                                            onChange={e => setResourceSearch(e.target.value)} className="pl-9 pr-8 h-8 text-sm" />
+                                        {resourceSearch && (
+                                            <button onClick={() => setResourceSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                                                <X className="h-3.5 w-3.5" />
+                                            </button>
+                                        )}
+                                    </div>
+                                    {customResources.length > 0 && (
+                                        <div className="flex flex-wrap gap-1.5 p-2 border rounded-lg bg-muted/30 max-h-20 overflow-y-auto">
+                                            {customResources.map(r => (
+                                                <Badge key={r} variant="default" className="cursor-pointer text-[10px] gap-1" onClick={() => toggleResource(r)}>
+                                                    {fmtResource(r).substring(0, 24)}<X className="h-2.5 w-2.5" />
                                                 </Badge>
                                             ))}
-                                            {template.resources.length > 3 && (
-                                                <Badge variant="secondary" className="text-xs">
-                                                    +{template.resources.length - 3} more
-                                                </Badge>
-                                            )}
                                         </div>
-                                    </div>
-
-                                    {alreadyExists && existingMonitor ? (
-                                        <div className="space-y-3">
-                                            <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-200 dark:border-green-800">
-                                                <p className="text-sm text-green-700 dark:text-green-300 mb-1">
-                                                    <strong>Existing Monitor:</strong>
-                                                </p>
-                                                <p className="text-sm text-green-600 dark:text-green-400">
-                                                    {existingMonitor.displayName}
-                                                </p>
-                                            </div>
-                                            <Button
-                                                className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    router.push(`/monitor/details/${existingMonitor.id}`);
-                                                }}
-                                            >
-                                                View Existing Monitor
-                                                <ArrowRight className="ml-2 h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    ) : (
-                                        <Button className={`w-full bg-gradient-to-r ${template.gradient} text-white`}>
-                                            Select Template
-                                            <ArrowRight className="ml-2 h-4 w-4" />
-                                        </Button>
                                     )}
+                                    <div className="border rounded-lg divide-y max-h-72 overflow-y-auto">
+                                        {filteredResourceCats.map(cat => {
+                                            const expanded = expandedCats.includes(cat.name);
+                                            const selCount = cat.resources.filter(r => customResources.includes(r)).length;
+                                            return (
+                                                <div key={cat.name}>
+                                                    <div className="flex items-center gap-2 p-2.5 cursor-pointer hover:bg-muted/50"
+                                                        onClick={() => setExpandedCats(p => p.includes(cat.name) ? p.filter(c => c !== cat.name) : [...p, cat.name])}>
+                                                        {expanded ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
+                                                        <Checkbox checked={selCount === cat.resources.length && cat.resources.length > 0}
+                                                            onCheckedChange={() => toggleCatAll(cat.resources)} onClick={e => e.stopPropagation()} className="h-4 w-4" />
+                                                        <span className="text-sm font-medium flex-1">{cat.displayName}</span>
+                                                        <Badge variant="outline" className="text-[10px]">{selCount}/{cat.resources.length}</Badge>
+                                                    </div>
+                                                    {expanded && (
+                                                        <div className="bg-muted/20 divide-y">
+                                                            {cat.resources.map(r => (
+                                                                <div key={r} className="flex items-center gap-2 pl-8 pr-3 py-2 hover:bg-muted/50 cursor-pointer" onClick={() => toggleResource(r)}>
+                                                                    <Checkbox checked={customResources.includes(r)} onCheckedChange={() => toggleResource(r)} className="h-3.5 w-3.5" />
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <p className="text-xs font-medium">{fmtResource(r)}</p>
+                                                                        <p className="text-[10px] text-muted-foreground font-mono truncate">{r}</p>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </CardContent>
                             </Card>
-                        );
-                    })}
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* ══════════════════════════════════════════════════════════════ */}
+            {/* STEP 3a: Creating snapshot (initial POST)                     */}
+            {/* ══════════════════════════════════════════════════════════════ */}
+            {step === 'creating' && (
+                <div className="max-w-lg mx-auto">
+                    <Card>
+                        <CardContent className="pt-12 pb-12 flex flex-col items-center gap-4 text-center">
+                            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                                <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold">Creating Snapshot</h3>
+                                <p className="text-sm text-muted-foreground mt-1">Submitting snapshot job to the API…</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
+
+            {/* ══════════════════════════════════════════════════════════════ */}
+            {/* STEP 3b: Polling for snapshot completion                      */}
+            {/* ══════════════════════════════════════════════════════════════ */}
+            {step === 'polling' && (
+                <div className="max-w-lg mx-auto">
+                    <Card>
+                        <CardContent className="pt-12 pb-12 flex flex-col items-center gap-6 text-center">
+                            <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center">
+                                <Loader2 className="h-8 w-8 text-amber-500 animate-spin" />
+                            </div>
+                            <div className="space-y-1">
+                                <h3 className="text-lg font-semibold">Processing Snapshot</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    The API is capturing your configuration resources.
+                                </p>
+                                <div className="pt-1">
+                                    <Badge variant="outline">{snapshotStatus}</Badge>
+                                </div>
+                            </div>
+                            <div className="w-full space-y-2">
+                                <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
+                                    <Clock className="h-4 w-4" />
+                                    <span>Check {pollingAttempts} / 60</span>
+                                    <span>·</span>
+                                    <span>Next in <strong className="text-foreground">{countdown}s</strong></span>
+                                </div>
+                                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                    <div className="h-full bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-1000"
+                                        style={{ width: `${(pollingAttempts / 60) * 100}%` }} />
+                                </div>
+                                <p className="text-xs text-muted-foreground">Max wait time: 10 minutes</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
+
+            {/* ══════════════════════════════════════════════════════════════ */}
+            {/* STEP 4: Review snapshot resources                             */}
+            {/* ══════════════════════════════════════════════════════════════ */}
+            {(step === 'review' || step === 'submitting') && currentSnapshot && (
+                <div className="space-y-4 max-w-4xl mx-auto">
+                    {/* Header banner */}
+                    <Card className="border-primary/20 bg-primary/5">
+                        <CardContent className="pt-5 pb-5">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                <div className="p-3 rounded-full bg-primary/10 shrink-0">
+                                    <CheckCircle className="h-6 w-6 text-primary" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-semibold text-lg">Snapshot captured successfully</h3>
+                                    <p className="text-sm text-muted-foreground mt-0.5">
+                                        <strong>{currentSnapshot.resources.length}</strong> resource{currentSnapshot.resources.length !== 1 ? 's' : ''} captured
+                                        across <strong>{Object.keys(groupedResources).length}</strong> resource type{Object.keys(groupedResources).length !== 1 ? 's' : ''}.
+                                        Review the baseline below, then confirm to create your monitor.
+                                    </p>
+                                </div>
+                                {/* Monitor name chip */}
+                                <div className="shrink-0 text-right hidden sm:block">
+                                    <p className="text-xs text-muted-foreground">Monitor name</p>
+                                    <p className="font-semibold text-sm">{sanitizeName(monitorName)}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Job metadata */}
+                    {currentJob && (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                            {[
+                                { label: 'Snapshot ID', value: currentSnapshot.id.substring(0, 8) + '…' },
+                                { label: 'Resources requested', value: currentJob.resources?.length ?? 0 },
+                                { label: 'Items captured', value: currentSnapshot.resources.length },
+                                { label: 'Resource types', value: Object.keys(groupedResources).length },
+                            ].map(({ label, value }) => (
+                                <div key={label} className="rounded-lg border bg-muted/20 p-3">
+                                    <p className="text-xs text-muted-foreground">{label}</p>
+                                    <p className="font-semibold mt-0.5">{value}</p>
+                                </div>
+                            ))}
                         </div>
                     )}
-                </>
-            )}
 
-            {/* Step 2: Configure Monitor */}
-            {step === 'configure' && selectedTemplate && (
-                <Card className="max-w-2xl mx-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                    <CardHeader>
-                        <CardTitle>Configure {selectedTemplate.title}</CardTitle>
-                        <CardDescription>
-                            Provide details for your new configuration monitor
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="space-y-2">
-                            <Label htmlFor="monitorName">Monitor Name *</Label>
-                            <Input
-                                id="monitorName"
-                                value={monitorName}
-                                onChange={(e) => setMonitorName(e.target.value)}
-                                placeholder="Enter monitor name (8-32 characters)"
-                                maxLength={32}
-                            />
-                            <div className="flex items-center justify-between text-xs">
-                                <span className={`${
-                                    sanitizeDisplayName(monitorName).length < 8 
-                                        ? 'text-red-500' 
-                                        : sanitizeDisplayName(monitorName).length > 32 
-                                        ? 'text-red-500' 
-                                        : 'text-green-500'
-                                }`}>
-                                    {sanitizeDisplayName(monitorName).length}/32 characters
-                                    {sanitizeDisplayName(monitorName).length < 8 && ' (minimum 8)'}
-                                </span>
-                                <span className="text-gray-500">
-                                    Only letters, numbers, and spaces
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="monitorDescription">Description</Label>
-                            <Textarea
-                                id="monitorDescription"
-                                value={monitorDescription}
-                                onChange={(e) => setMonitorDescription(e.target.value)}
-                                placeholder="Enter description"
-                                rows={4}
-                            />
-                        </div>
-
-                        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                            <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                                <Shield className="h-4 w-4 text-blue-600" />
-                                Resources to Monitor
-                            </h4>
-                            <div className="space-y-1 text-sm text-gray-600 dark:text-gray-300">
-                                {selectedTemplate.resources.map((resource, idx) => (
-                                    <div key={idx} className="flex items-center gap-2">
-                                        <CheckCircle className="h-3 w-3 text-green-500" />
-                                        {resource}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3">
-                            <Button
-                                variant="outline"
-                                onClick={() => {
-                                    setStep('select');
-                                    setSelectedTemplate(null);
-                                }}
-                                className="flex-1"
-                            >
-                                Back
-                            </Button>
-                            <Button
-                                onClick={handleCreateMonitor}
-                                disabled={!monitorName.trim() || validateDisplayName(monitorName) !== null}
-                                className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
-                            >
-                                Create Monitor
-                                <ArrowRight className="ml-2 h-4 w-4" />
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* Step 3: Creating Snapshot */}
-            {step === 'creating' && (
-                <Card className="max-w-2xl mx-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                    <CardContent className="pt-6">
-                        <div className="text-center py-12">
-                            <Loader2 className="h-16 w-16 mx-auto text-blue-500 animate-spin mb-4" />
-                            <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-2">
-                                Creating Snapshot
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300">
-                                Initializing configuration snapshot...
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* Step 4: Polling for Completion */}
-            {step === 'polling' && (
-                <Card className="max-w-2xl mx-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                    <CardContent className="pt-6">
-                        <div className="text-center py-12 space-y-6">
-                            <Loader2 className="h-16 w-16 mx-auto text-yellow-500 animate-spin" />
-                            <div>
-                                <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-2">
-                                    Processing Snapshot
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-300 mb-4">
-                                    Status: <Badge variant="outline">{snapshotStatus}</Badge>
-                                </p>
-                                <div className="flex flex-col items-center justify-center gap-3 text-sm">
-                                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                                        <Clock className="h-4 w-4" />
-                                        <span>Check {pollingAttempts} of 60</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="relative">
-                                            <div className="w-16 h-16 rounded-full border-4 border-gray-200 dark:border-gray-700 flex items-center justify-center">
-                                                <span className="text-2xl font-bold text-yellow-500">
-                                                    {countdown}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <span className="text-gray-600 dark:text-gray-300">
-                                            seconds until next check
-                                        </span>
-                                    </div>
+                    {/* Resource browser */}
+                    <Card>
+                        <CardHeader className="pb-3">
+                            <div className="flex items-center justify-between gap-3 flex-wrap">
+                                <CardTitle className="text-base">Baseline Resources</CardTitle>
+                                <div className="relative w-full sm:w-64">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                                    <Input placeholder="Filter resources…" value={reviewSearch}
+                                        onChange={e => setReviewSearch(e.target.value)} className="pl-9 pr-8 h-8 text-sm" />
+                                    {reviewSearch && (
+                                        <button onClick={() => setReviewSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                                            <X className="h-3.5 w-3.5" />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
-                            <div className="max-w-md mx-auto">
-                                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-gradient-to-r from-yellow-400 to-yellow-600 transition-all duration-1000"
-                                        style={{ width: `${(pollingAttempts / 60) * 100}%` }}
-                                    ></div>
+                            {reviewSearch && (
+                                <CardDescription className="text-xs">
+                                    Showing filtered results — {Object.values(groupedResources).flat().length} of {currentSnapshot.resources.length} items
+                                </CardDescription>
+                            )}
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            {Object.keys(groupedResources).length === 0 ? (
+                                <div className="text-center py-8 text-muted-foreground">
+                                    <Search className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                                    <p className="text-sm">No resources match &ldquo;{reviewSearch}&rdquo;</p>
                                 </div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                    Maximum wait time: 10 minutes
-                                </p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                            ) : (
+                                Object.entries(groupedResources).map(([resourceType, items]) => (
+                                    <ResourceGroup key={resourceType} resourceType={resourceType} items={items} />
+                                ))
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Actions */}
+                    <div className="flex gap-3 justify-end">
+                        <Button variant="outline" onClick={() => setStep('configure')} disabled={step === 'submitting'}>
+                            <ChevronLeft className="h-4 w-4 mr-1" />Back
+                        </Button>
+                        <Button onClick={handleConfirmCreateMonitor} disabled={step === 'submitting'} className="min-w-36">
+                            {step === 'submitting'
+                                ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Creating monitor…</>
+                                : <>Create Monitor <ArrowRight className="h-4 w-4 ml-1.5" /></>
+                            }
+                        </Button>
+                    </div>
+                </div>
             )}
 
-            {/* Step 5: Success */}
+            {/* ══════════════════════════════════════════════════════════════ */}
+            {/* STEP 5: Success                                                */}
+            {/* ══════════════════════════════════════════════════════════════ */}
             {step === 'success' && (
-                <Card className="max-w-2xl mx-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                    <CardContent className="pt-6">
-                        <div className="text-center py-12">
-                            <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-4">
-                                <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
+                <div className="max-w-lg mx-auto">
+                    <Card className="border-green-200 dark:border-green-800 overflow-hidden">
+                        <div className="h-1.5 bg-gradient-to-r from-green-400 to-emerald-500" />
+                        <CardContent className="pt-12 pb-12 flex flex-col items-center gap-4 text-center">
+                            <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                                <CheckCircle className="h-9 w-9 text-green-600 dark:text-green-400" />
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                                Monitor Created Successfully!
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300 mb-6">
-                                Your configuration monitor has been created and is now active.
-                            </p>
-                            <div className="flex gap-3 justify-center">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => router.push('/monitor/global-overview')}
-                                >
-                                    View All Monitors
-                                </Button>
-                                <Button
-                                    onClick={handleViewMonitor}
-                                    className="bg-gradient-to-r from-green-500 to-emerald-500 text-white"
-                                >
-                                    View Monitor Details
-                                    <ArrowRight className="ml-2 h-4 w-4" />
+                            <div>
+                                <h3 className="text-2xl font-bold">Monitor Created!</h3>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    Your configuration monitor is now active and will track drift against the baseline you reviewed.
+                                </p>
+                            </div>
+                            <div className="flex gap-3 mt-2">
+                                <Button variant="outline" onClick={() => router.push('/monitor/monitors')}>All Monitors</Button>
+                                <Button className="bg-gradient-to-r from-green-500 to-emerald-500 text-white"
+                                    onClick={() => createdMonitorId && router.push(`/monitor/details/${createdMonitorId}`)}>
+                                    View Monitor <ArrowRight className="h-4 w-4 ml-1.5" />
                                 </Button>
                             </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                </div>
             )}
 
-            {/* Step 6: Error */}
+            {/* ══════════════════════════════════════════════════════════════ */}
+            {/* Error                                                          */}
+            {/* ══════════════════════════════════════════════════════════════ */}
             {step === 'error' && (
-                <Card className="max-w-2xl mx-auto bg-white dark:bg-gray-800 border border-red-200 dark:border-red-800">
-                    <CardContent className="pt-6">
-                        <div className="text-center py-12">
-                            <div className="mx-auto w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-4">
-                                <AlertCircle className="h-10 w-10 text-red-600 dark:text-red-400" />
+                <div className="max-w-lg mx-auto">
+                    <Card className="border-destructive/40">
+                        <CardContent className="pt-12 pb-12 flex flex-col items-center gap-4 text-center">
+                            <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
+                                <AlertCircle className="h-9 w-9 text-destructive" />
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                                Error Creating Monitor
-                            </h3>
-                            <p className="text-red-600 dark:text-red-400 mb-6">
-                                {error}
-                            </p>
-                            <div className="flex gap-3 justify-center">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => {
-                                        setStep('select');
-                                        setError(null);
-                                        setSelectedTemplate(null);
-                                    }}
-                                >
-                                    Start Over
-                                </Button>
-                                <Button
-                                    onClick={() => setStep('configure')}
-                                    disabled={!selectedTemplate}
-                                >
+                            <div>
+                                <h3 className="text-xl font-bold">Something went wrong</h3>
+                                <p className="text-sm text-destructive mt-1 max-w-sm">{error}</p>
+                            </div>
+                            <div className="flex gap-3 mt-2">
+                                <Button variant="outline" onClick={resetToGallery}>Start Over</Button>
+                                <Button onClick={() => setStep('configure')} disabled={!selectedTemplate && !isCustom}>
                                     Try Again
                                 </Button>
                             </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                </div>
             )}
         </div>
     );
