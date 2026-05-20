@@ -977,6 +977,7 @@ function AssignmentRolloutContent() {
         if (check.groupExists === false) errors.push("Group not found");
         if (check.correctAssignmentTypeProvided === false) errors.push("Invalid assignment type");
         if (!check.correctAssignmentActionProvided) errors.push("Invalid assignment action");
+        if (check.assignmentExists === false) errors.push("Assignment does not exist in target");
 
         if (check.filterExist === false) warnings.push("Filter not found");
         if (check.filterIsUnique === false) warnings.push("Multiple filters found");
@@ -989,7 +990,13 @@ function AssignmentRolloutContent() {
         }
 
         // IMPORTANT: If there are compatibility errors, always show red regardless of other checks
-        if (compatibilityErrors.length > 0 || !allChecksPass) {
+        // Also show red if masterStatus is compare_failed (e.g. assignmentExists: false)
+        if (compatibilityErrors.length > 0 || !allChecksPass || result.masterStatus === 'compare_failed') {
+            // If the only reason it's failed isn't covered by errors/compatErrors (e.g. assignmentExists: false),
+            // surface the failureReason from the result
+            if (errors.length === 0 && compatibilityErrors.length === 0 && result.failureReason) {
+                errors.push(...result.failureReason.split('; ').filter(Boolean));
+            }
             return (
                 <>
                     <div
