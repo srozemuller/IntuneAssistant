@@ -61,7 +61,7 @@ interface RoleScopeTag {
     isBuildIn: boolean;
 }
 
-type AssignmentAction = 'Add' | 'Remove' | 'NoAssignment' | 'Replace';
+type AssignmentAction = 'Add' | 'Remove' | 'NoAssignment' | 'Replace' | 'Update';
 type FilterType = 'Include' | 'Exclude' | 'None';
 
 interface EditableFields {
@@ -265,6 +265,7 @@ export default function MigrationBuilderPage() {
     const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
     const [platformFilter, setPlatformFilter] = useState<string[]>([]);
     const [actionFilter, setActionFilter] = useState<string[]>([]);
+    const [filterNameFilter, setFilterNameFilter] = useState<string[]>([]);
 
     // Selection
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -277,6 +278,18 @@ export default function MigrationBuilderPage() {
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [editGroupSearch, setEditGroupSearch] = useState('');
     const [editFilterSearch, setEditFilterSearch] = useState('');
+
+    // Bulk edit dialog
+    type BulkField = 'group' | 'action' | 'filter' | 'scopeTags';
+    const [bulkEditOpen, setBulkEditOpen] = useState(false);
+    const [bulkWizardStep, setBulkWizardStep] = useState<1 | 2 | 3>(1);
+    const [bulkEditActiveFields, setBulkEditActiveFields] = useState<Set<BulkField>>(new Set());
+    const [bulkEditValues, setBulkEditValues] = useState<Partial<EditableFields>>({
+        groupName: '', groupId: null, assignmentAction: 'Add',
+        filterId: null, filterName: null, filterType: 'None', scopeTagIds: [],
+    });
+    const [bulkEditGroupSearch, setBulkEditGroupSearch] = useState('');
+    const [bulkEditFilterSearch, setBulkEditFilterSearch] = useState('');
 
     // ── Load from sessionStorage ──────────────────────────────────────────────
     useEffect(() => {
@@ -333,6 +346,13 @@ export default function MigrationBuilderPage() {
         { label: 'Add', value: 'Add' }, { label: 'Remove', value: 'Remove' },
         { label: 'Replace', value: 'Replace' }, { label: 'NoAssignment', value: 'NoAssignment' },
     ];
+    const filterNameOptions = useMemo(() => {
+        const names = [...new Set(rows.map(r => r.filterName).filter(Boolean) as string[])].sort();
+        // Also include a "No Filter" option if any rows have no filter
+        const opts = names.map(n => ({ label: n, value: n }));
+        if (rows.some(r => !r.filterName)) opts.unshift({ label: '— No Filter —', value: '__none__' });
+        return opts;
+    }, [rows]);
 
     const displayedRows = useMemo(() => {
         let r = rows;
@@ -344,27 +364,34 @@ export default function MigrationBuilderPage() {
         if (resourceTypeFilter.length) r = r.filter(row => resourceTypeFilter.includes(row.resourceType));
         if (platformFilter.length) r = r.filter(row => platformFilter.includes(row.platform));
         if (actionFilter.length) r = r.filter(row => actionFilter.includes(row.assignmentAction));
+        if (filterNameFilter.length) r = r.filter(row =>
+            filterNameFilter.includes(row.filterName ?? '__none__') ||
+            (filterNameFilter.includes('__none__') && !row.filterName)
+        );
         return r;
-    }, [rows, policySearch, scopeTagFilter, resourceTypeFilter, platformFilter, actionFilter]);
+    }, [rows, policySearch, scopeTagFilter, resourceTypeFilter, platformFilter, actionFilter, filterNameFilter]);
 
-    const activeFilterCount = scopeTagFilter.length + resourceTypeFilter.length + platformFilter.length + actionFilter.length;
+    const activeFilterCount = scopeTagFilter.length + resourceTypeFilter.length + platformFilter.length + actionFilter.length + filterNameFilter.length;
     const generatedRows = useMemo(() => rows.filter(r => r.isGenerated), [rows]);
-    const modifiedCount = rows.filter(r => r.isModified).length;
+    const modifiedRows = useMemo(() => rows.filter(r => r.isModified && !r.isGenerated), [rows]);
+    // Rows ready to send: modified source rows + generated ring rows (generated are implicitly modified)
+    const deployableRows = useMemo(() => [...modifiedRows, ...generatedRows], [modifiedRows, generatedRows]);
+    const modifiedCount = modifiedRows.length;
     const allDisplayedSelected = displayedRows.length > 0 && displayedRows.every(r => selectedIds.has(r.id));
     const someDisplayedSelected = displayedRows.some(r => selectedIds.has(r.id));
     const templateReady = !!template.groupName;
 
-    // Grouped summary for Review dialog
+    // Grouped summary for Review dialog — covers both modified and generated rows
     const reviewGroups = useMemo(() => {
-        const byPolicy = new Map<string, { include: BuilderRow[]; exclude: BuilderRow[] }>();
-        for (const row of generatedRows) {
-            if (!byPolicy.has(row.policyName)) byPolicy.set(row.policyName, { include: [], exclude: [] });
+        const byPolicy = new Map<string, { include: BuilderRow[]; exclude: BuilderRow[]; isModified: boolean }>();
+        for (const row of deployableRows) {
+            if (!byPolicy.has(row.policyName)) byPolicy.set(row.policyName, { include: [], exclude: [], isModified: !!row.isModified && !row.isGenerated });
             const entry = byPolicy.get(row.policyName)!;
             if (row.assignmentDirection === 'Exclude') entry.exclude.push(row);
             else entry.include.push(row);
         }
         return Array.from(byPolicy.entries()).map(([policy, sides]) => ({ policy, ...sides }));
-    }, [generatedRows]);
+    }, [deployableRows]);
 
     // ── Selection ─────────────────────────────────────────────────────────────
     const toggleRow = (id: string) => setSelectedIds(prev => {
@@ -407,6 +434,48 @@ export default function MigrationBuilderPage() {
         clearSelection();
     };
 
+    // ── Bulk Edit ─────────────────────────────────────────────────────────────
+    const openBulkEdit = () => {
+        setBulkWizardStep(1);
+        setBulkEditActiveFields(new Set());
+        setBulkEditValues({ groupName: '', groupId: null, assignmentAction: 'Add', filterId: null, filterName: null, filterType: 'None', scopeTagIds: [] });
+        setBulkEditGroupSearch('');
+        setBulkEditFilterSearch('');
+        setBulkEditOpen(true);
+    };
+    const toggleBulkField = (field: BulkField) => {
+        setBulkEditActiveFields(prev => {
+            const n = new Set(prev);
+            if (n.has(field)) { n.delete(field); } else { n.add(field); }
+            return n;
+        });
+    };
+    const applyBulkEdit = () => {
+        setRows(prev => prev.map(row => {
+            if (!selectedIds.has(row.id)) return row;
+            const updates: Partial<EditableFields> = {};
+            if (bulkEditActiveFields.has('group')) {
+                updates.groupName = bulkEditValues.groupName ?? '';
+                updates.groupId = bulkEditValues.groupId ?? null;
+            }
+            if (bulkEditActiveFields.has('action')) {
+                updates.assignmentAction = bulkEditValues.assignmentAction ?? row.assignmentAction;
+            }
+            if (bulkEditActiveFields.has('filter')) {
+                updates.filterId = bulkEditValues.filterId ?? null;
+                updates.filterName = bulkEditValues.filterName ?? null;
+                updates.filterType = bulkEditValues.filterType ?? 'None';
+            }
+            if (bulkEditActiveFields.has('scopeTags')) {
+                updates.scopeTagIds = bulkEditValues.scopeTagIds ?? [];
+            }
+            if (Object.keys(updates).length === 0) return row;
+            return { ...row, ...updates, isModified: rowIsModified(row, updates) };
+        }));
+        // Move to step 3 (done) instead of closing, so user can see what happened and continue
+        setBulkWizardStep(3);
+    };
+
     // ── Edit ──────────────────────────────────────────────────────────────────
     const openEdit = (row: BuilderRow) => { setEditingRow({ ...row }); setEditGroupSearch(''); setEditFilterSearch(''); setEditDialogOpen(true); };
     const saveEdit = () => {
@@ -435,7 +504,7 @@ export default function MigrationBuilderPage() {
         document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     };
     const sendToDeployment = () => {
-        sessionStorage.setItem(MIGRATION_BUILDER_DEPLOYMENT_KEY, buildCSVContent(generatedRows));
+        sessionStorage.setItem(MIGRATION_BUILDER_DEPLOYMENT_KEY, buildCSVContent(deployableRows));
         router.push('/deployment/assignments');
     };
 
@@ -446,7 +515,7 @@ export default function MigrationBuilderPage() {
         if (action === 'Remove') return 'destructive' as const;
         return 'secondary' as const;
     };
-    const clearAllFilters = () => { setScopeTagFilter([]); setResourceTypeFilter([]); setPlatformFilter([]); setActionFilter([]); setPolicySearch(''); };
+    const clearAllFilters = () => { setScopeTagFilter([]); setResourceTypeFilter([]); setPlatformFilter([]); setActionFilter([]); setFilterNameFilter([]); setPolicySearch(''); };
 
     // ─────────────────────────────────────────────────────────────────────────
     return (
@@ -494,15 +563,15 @@ export default function MigrationBuilderPage() {
                     <Button onClick={exportCSV} size="sm" variant="outline" disabled={rows.length === 0}>
                         <Download className="h-4 w-4 mr-2" />Export CSV
                     </Button>
-                    {generatedRows.length > 0 && (
+                    {deployableRows.length > 0 && (
                         <Button onClick={() => setReviewOpen(true)} size="sm" variant="outline" className="border-purple-400 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20">
                             <Eye className="h-4 w-4 mr-2" />
-                            Review ({generatedRows.length})
+                            Review ({deployableRows.length})
                         </Button>
                     )}
                     <Button onClick={() => setReviewOpen(true)} size="sm"
-                        disabled={generatedRows.length === 0 || !hasBuilderAccess}
-                        title={!hasBuilderAccess ? 'Assignments Manager license required' : generatedRows.length === 0 ? 'Generate ring rows first (Steps 2 & 3)' : 'Review generated rows before sending to Deployment'}>
+                        disabled={deployableRows.length === 0 || !hasBuilderAccess}
+                        title={!hasBuilderAccess ? 'Assignments Manager license required' : deployableRows.length === 0 ? 'Modify or generate rows first' : `Review ${deployableRows.length} row${deployableRows.length !== 1 ? 's' : ''} before sending to Deployment`}>
                         <FileSpreadsheet className="h-4 w-4 mr-2" />Send to Deployment
                     </Button>
                 </div>
@@ -513,10 +582,15 @@ export default function MigrationBuilderPage() {
                 <div className="flex gap-2 flex-wrap items-center">
                     <Badge variant="secondary">{rows.length} source rows</Badge>
                     {displayedRows.length !== rows.length && <Badge variant="outline">{displayedRows.length} shown</Badge>}
-                    {modifiedCount > 0 && <Badge className="bg-yellow-500 hover:bg-yellow-600">{modifiedCount} modified</Badge>}
+                    {modifiedCount > 0 && <Badge className="bg-yellow-500 hover:bg-yellow-600 cursor-pointer" onClick={() => setReviewOpen(true)}>{modifiedCount} modified</Badge>}
                     {generatedRows.length > 0 && (
                         <Badge className="bg-purple-600 hover:bg-purple-700 cursor-pointer" onClick={() => setReviewOpen(true)}>
-                            {generatedRows.length} generated — click to review
+                            {generatedRows.length} generated
+                        </Badge>
+                    )}
+                    {deployableRows.length > 0 && (
+                        <Badge className="bg-green-600 hover:bg-green-700 cursor-pointer" onClick={() => setReviewOpen(true)}>
+                            {deployableRows.length} ready to deploy — click to review
                         </Badge>
                     )}
                     {selectedIds.size > 0 && <Badge className="bg-blue-600 hover:bg-blue-700">{selectedIds.size} selected</Badge>}
@@ -596,6 +670,7 @@ export default function MigrationBuilderPage() {
                                             <SelectItem value="Add">Add</SelectItem>
                                             <SelectItem value="Remove">Remove</SelectItem>
                                             <SelectItem value="Replace">Replace</SelectItem>
+                                            <SelectItem value="Update">Update</SelectItem>
                                             <SelectItem value="NoAssignment">NoAssignment</SelectItem>
                                         </SelectContent>
                                     </Select>
@@ -657,7 +732,7 @@ export default function MigrationBuilderPage() {
                         </div>
                         {/* Collapsible advanced filters */}
                         {filterPanelOpen && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-3 pt-3 border-t">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mt-3 pt-3 border-t">
                                 <div className="space-y-1">
                                     <Label className="text-xs font-medium flex items-center gap-1"><Monitor className="h-3 w-3" />Platform</Label>
                                     <MultiSelect options={platformOptions} selected={platformFilter}
@@ -677,6 +752,11 @@ export default function MigrationBuilderPage() {
                                     <Label className="text-xs font-medium">Assignment Action</Label>
                                     <MultiSelect options={actionOptions} selected={actionFilter}
                                         onChange={setActionFilter} placeholder="All actions…" />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-xs font-medium flex items-center gap-1"><Filter className="h-3 w-3" />Filter</Label>
+                                    <MultiSelect options={filterNameOptions} selected={filterNameFilter}
+                                        onChange={setFilterNameFilter} placeholder="All filters…" />
                                 </div>
                             </div>
                         )}
@@ -702,6 +782,11 @@ export default function MigrationBuilderPage() {
                                     title={!templateReady ? 'Configure template first' : !dataLoaded ? 'Load reference data first' : 'Generate Exclude assignment rows'}
                                     onClick={() => generateRows('Exclude')}>
                                     <CircleMinus className="h-3.5 w-3.5" />Step 3 — Add as Exclude
+                                </Button>
+                                <Button size="sm" variant="outline" className="h-8 gap-1.5 border-yellow-400 text-yellow-700 hover:bg-yellow-50 dark:text-yellow-300 dark:hover:bg-yellow-900/20" disabled={!dataLoaded}
+                                    title="Update specific fields across all selected rows — keep group assignments, change only filter, action or scope tags"
+                                    onClick={openBulkEdit}>
+                                    <Edit2 className="h-3.5 w-3.5" />Bulk Edit Selected ({selectedIds.size})
                                 </Button>
                                 <Button size="sm" variant="outline" className="h-8 gap-1.5" disabled={!dataLoaded}
                                     onClick={() => { const first = rows.find(r => selectedIds.has(r.id)); if (first) openEdit(first); }}>
@@ -855,10 +940,10 @@ export default function MigrationBuilderPage() {
                     <DialogHeader className="shrink-0">
                         <DialogTitle className="flex items-center gap-2">
                             <Eye className="h-5 w-5 text-purple-500" />
-                            Review — {generatedRows.length} generated assignment{generatedRows.length !== 1 ? 's' : ''}
+                            Review — {deployableRows.length} row{deployableRows.length !== 1 ? 's' : ''} ready to deploy
                         </DialogTitle>
                         <DialogDescription>
-                            These are the rows that will be sent to Deployment. Review carefully before continuing.
+                            Review all modified and generated rows before sending to Deployment.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -874,45 +959,50 @@ export default function MigrationBuilderPage() {
                         </div>
                     </div>
 
-                    {/* Warnings */}
-                    {reviewGroups.some(g => g.include.length === 0 || g.exclude.length === 0) && (
+                    {/* Warnings — only relevant for generated ring rows (include/exclude pairs) */}
+                    {generatedRows.length > 0 && reviewGroups.some(g => !g.isModified && (g.include.length === 0 || g.exclude.length === 0)) && (
                         <div className="shrink-0 flex items-start gap-2 rounded-lg border border-orange-200 bg-orange-50/60 dark:border-orange-800 dark:bg-orange-900/20 px-4 py-3 text-xs text-orange-700 dark:text-orange-300">
                             <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
                             <span>Some policies only have an Include <em>or</em> an Exclude row — not both. Go back if you need to add the missing side.</span>
                         </div>
                     )}
 
+                    {/* Summary counts */}
+                    {(modifiedRows.length > 0 || generatedRows.length > 0) && (
+                        <div className="shrink-0 flex gap-3 flex-wrap text-xs">
+                            {modifiedRows.length > 0 && <Badge className="bg-yellow-500 text-white">{modifiedRows.length} modified source rows</Badge>}
+                            {generatedRows.length > 0 && <Badge className="bg-purple-600 text-white">{generatedRows.length} generated ring rows</Badge>}
+                        </div>
+                    )}
+
                     {/* Policy list */}
                     <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-                        {reviewGroups.map(({ policy, include, exclude }) => (
-                            <div key={policy} className="rounded-lg border bg-card">
-                                <div className="px-4 py-2.5 border-b bg-muted/30">
-                                    <p className="text-sm font-semibold truncate" title={policy}>{policy}</p>
-                                    {include[0] && <p className="text-[11px] text-muted-foreground">{include[0].resourceType} · {include[0].platform}</p>}
+                        {reviewGroups.map(({ policy, include, exclude, isModified: policyIsModified }) => (
+                            <div key={policy} className={`rounded-lg border bg-card ${policyIsModified ? 'border-yellow-300 dark:border-yellow-700' : ''}`}>
+                                <div className={`px-4 py-2.5 border-b ${policyIsModified ? 'bg-yellow-50/60 dark:bg-yellow-900/10' : 'bg-muted/30'}`}>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-sm font-semibold truncate flex-1" title={policy}>{policy}</p>
+                                        {policyIsModified
+                                            ? <Badge className="text-[9px] bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300 border-yellow-300 shrink-0">Modified</Badge>
+                                            : <Badge className="text-[9px] bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-300 shrink-0">Generated</Badge>}
+                                    </div>
+                                    {(include[0] || exclude[0]) && <p className="text-[11px] text-muted-foreground mt-0.5">{(include[0] || exclude[0]).resourceType} · {(include[0] || exclude[0]).platform}</p>}
                                 </div>
                                 <div className="px-4 py-3 space-y-2">
-                                    {include.map(r => (
-                                        <div key={r.id} className="flex items-center gap-3 text-xs">
-                                            <Badge className="text-[9px] bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 border-green-300 shrink-0">Include</Badge>
+                                    {[...include, ...exclude].map(r => (
+                                        <div key={r.id} className="flex items-center gap-2 text-xs flex-wrap">
+                                            <Badge variant={r.assignmentDirection === 'Exclude' ? 'destructive' : 'default'} className="text-[9px] shrink-0">{r.assignmentDirection}</Badge>
                                             <span className="font-medium">{r.groupName}</span>
                                             <Badge variant="outline" className="text-[9px]">{r.assignmentAction}</Badge>
                                             {r.filterName && <span className="text-muted-foreground">{r.filterName} ({r.filterType})</span>}
                                         </div>
                                     ))}
-                                    {exclude.map(r => (
-                                        <div key={r.id} className="flex items-center gap-3 text-xs">
-                                            <Badge className="text-[9px] bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border-red-300 shrink-0">Exclude</Badge>
-                                            <span className="font-medium">{r.groupName}</span>
-                                            <Badge variant="outline" className="text-[9px]">{r.assignmentAction}</Badge>
-                                            {r.filterName && <span className="text-muted-foreground">{r.filterName} ({r.filterType})</span>}
-                                        </div>
-                                    ))}
-                                    {include.length === 0 && (
+                                    {!policyIsModified && include.length === 0 && (
                                         <div className="flex items-center gap-2 text-[11px] text-orange-500">
                                             <AlertTriangle className="h-3 w-3" />No Include row
                                         </div>
                                     )}
-                                    {exclude.length === 0 && (
+                                    {!policyIsModified && exclude.length === 0 && (
                                         <div className="flex items-center gap-2 text-[11px] text-orange-500">
                                             <AlertTriangle className="h-3 w-3" />No Exclude row
                                         </div>
@@ -936,7 +1026,7 @@ export default function MigrationBuilderPage() {
                                 title={!hasBuilderAccess ? 'Assignments Manager license required' : undefined}
                                 onClick={() => { setReviewOpen(false); sendToDeployment(); }}>
                                 <SendHorizonal className="h-3.5 w-3.5" />
-                                Send {generatedRows.length} rows to Deployment
+                                Send {deployableRows.length} row{deployableRows.length !== 1 ? 's' : ''} to Deployment
                             </Button>
                         </div>
                     </div>
@@ -966,6 +1056,7 @@ export default function MigrationBuilderPage() {
                                         <SelectItem value="Add">Add</SelectItem>
                                         <SelectItem value="Remove">Remove</SelectItem>
                                         <SelectItem value="Replace">Replace</SelectItem>
+                                        <SelectItem value="Update">Update</SelectItem>
                                         <SelectItem value="NoAssignment">NoAssignment</SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -1005,6 +1096,256 @@ export default function MigrationBuilderPage() {
                                     <Button size="sm" onClick={saveEdit}>Save Changes</Button>
                                 </div>
                             </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            {/* ── Bulk Edit Wizard ──────────────────────────────────────────── */}
+            <Dialog open={bulkEditOpen} onOpenChange={open => { if (!open) setBulkEditOpen(false); }}>
+                <DialogContent className="max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+
+                    {/* ── Wizard header ── */}
+                    <DialogHeader className="shrink-0 pb-3 border-b">
+                        <DialogTitle className="flex items-center gap-2 text-base">
+                            <Edit2 className="h-4 w-4 text-yellow-500" />
+                            Bulk Edit — {selectedIds.size} row{selectedIds.size !== 1 ? 's' : ''}
+                        </DialogTitle>
+                        {/* Step indicator */}
+                        <div className="flex items-center gap-2 mt-3">
+                            {(['What to update', 'Configure values', 'Done'] as const).map((label, i) => {
+                                const step = (i + 1) as 1 | 2 | 3;
+                                const active = bulkWizardStep === step;
+                                const done = bulkWizardStep > step;
+                                return (
+                                    <React.Fragment key={step}>
+                                        <div className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full transition-colors
+                                            ${active ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200' :
+                                              done  ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' :
+                                                      'text-muted-foreground'}`}>
+                                            {done
+                                                ? <CheckCircle2 className="h-3 w-3" />
+                                                : <span className={`w-4 h-4 rounded-full text-[10px] flex items-center justify-center border ${active ? 'border-yellow-500 text-yellow-700' : 'border-muted-foreground/40'}`}>{step}</span>}
+                                            {label}
+                                        </div>
+                                        {i < 2 && <div className="flex-1 h-px bg-border" />}
+                                    </React.Fragment>
+                                );
+                            })}
+                        </div>
+                    </DialogHeader>
+
+                    {/* ── Step content ── */}
+                    <div className="flex-1 overflow-y-auto py-4 space-y-4">
+
+                        {/* ══ STEP 1 — What to update ══ */}
+                        {bulkWizardStep === 1 && (<>
+                            <p className="text-sm text-muted-foreground">Select all fields you want to change across the {selectedIds.size} selected row{selectedIds.size !== 1 ? 's' : ''}. Fields you don&apos;t select stay exactly as they are.</p>
+
+                            {([ 
+                                { field: 'group'     as BulkField, icon: <Users className="h-4 w-4 text-blue-500" />,   title: 'Group (Target)',       desc: 'Set the same group on all selected rows' },
+                                { field: 'action'    as BulkField, icon: <RefreshCw className="h-4 w-4 text-purple-500" />, title: 'Assignment Action',  desc: 'e.g. change to Update, Add, Remove' },
+                                { field: 'filter'    as BulkField, icon: <Filter className="h-4 w-4 text-orange-500" />,title: 'Filter',               desc: 'Replace the assignment filter on all rows — leave group unchanged' },
+                                { field: 'scopeTags' as BulkField, icon: <Shield className="h-4 w-4 text-green-500" />, title: 'Scope Tags',           desc: 'Overwrite scope tag assignments' },
+                            ] as { field: BulkField; icon: React.ReactNode; title: string; desc: string }[]).map(({ field, icon, title, desc }) => {
+                                const active = bulkEditActiveFields.has(field);
+                                return (
+                                    <button key={field}
+                                        onClick={() => toggleBulkField(field)}
+                                        className={`w-full text-left flex items-start gap-3 rounded-lg border p-4 transition-all
+                                            ${active ? 'border-yellow-400 bg-yellow-50/60 dark:bg-yellow-900/15 shadow-sm' : 'border-border hover:border-muted-foreground/40 hover:bg-muted/20'}`}>
+                                        <div className={`mt-0.5 rounded-md p-1.5 ${active ? 'bg-yellow-100 dark:bg-yellow-900/40' : 'bg-muted'}`}>{icon}</div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium">{title}</p>
+                                            <p className="text-xs text-muted-foreground mt-0.5">{desc}</p>
+                                        </div>
+                                        <div className={`mt-1 h-4 w-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors
+                                            ${active ? 'border-yellow-500 bg-yellow-500' : 'border-muted-foreground/40'}`}>
+                                            {active && <CheckCircle2 className="h-3 w-3 text-white" />}
+                                        </div>
+                                    </button>
+                                );
+                            })}
+
+                            {bulkEditActiveFields.size === 0 && (
+                                <p className="text-xs text-orange-500 flex items-center gap-1.5 pt-1">
+                                    <AlertTriangle className="h-3.5 w-3.5 shrink-0" />Select at least one field to continue.
+                                </p>
+                            )}
+                        </>)}
+
+                        {/* ══ STEP 2 — Configure values ══ */}
+                        {bulkWizardStep === 2 && (<>
+                            <p className="text-sm text-muted-foreground">Configure the new value for each selected field. All other fields will remain unchanged.</p>
+
+                            {bulkEditActiveFields.has('filter') && (
+                                <div className="space-y-3 rounded-lg border border-orange-200 dark:border-orange-800 bg-orange-50/40 dark:bg-orange-900/10 p-4">
+                                    <div className="flex items-center gap-2">
+                                        <Filter className="h-4 w-4 text-orange-500 shrink-0" />
+                                        <span className="text-sm font-medium">Filter</span>
+                                    </div>
+                                    <FilterPicker search={bulkEditFilterSearch} onSearch={setBulkEditFilterSearch}
+                                        selectedId={bulkEditValues.filterId ?? null} filters={filters}
+                                        onSelect={(id, name) => setBulkEditValues(p => ({ ...p, filterId: id, filterName: name, filterType: !p.filterType || p.filterType === 'None' ? 'Include' : p.filterType }))}
+                                        onClear={() => setBulkEditValues(p => ({ ...p, filterId: null, filterName: null, filterType: 'None' }))} />
+                                    {bulkEditValues.filterId && (
+                                        <div className="space-y-1.5">
+                                            <Label className="text-xs font-medium">Filter Type</Label>
+                                            <Select value={bulkEditValues.filterType} onValueChange={v => setBulkEditValues(p => ({ ...p, filterType: v as FilterType }))}>
+                                                <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="Include">Include</SelectItem>
+                                                    <SelectItem value="Exclude">Exclude</SelectItem>
+                                                    <SelectItem value="None">None</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {bulkEditActiveFields.has('action') && (
+                                <div className="space-y-3 rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50/40 dark:bg-purple-900/10 p-4">
+                                    <div className="flex items-center gap-2">
+                                        <RefreshCw className="h-4 w-4 text-purple-500 shrink-0" />
+                                        <span className="text-sm font-medium">Assignment Action</span>
+                                    </div>
+                                    <Select value={bulkEditValues.assignmentAction} onValueChange={v => setBulkEditValues(p => ({ ...p, assignmentAction: v as AssignmentAction }))}>
+                                        <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Add">Add</SelectItem>
+                                            <SelectItem value="Remove">Remove</SelectItem>
+                                            <SelectItem value="Replace">Replace</SelectItem>
+                                            <SelectItem value="Update">Update</SelectItem>
+                                            <SelectItem value="NoAssignment">NoAssignment</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
+
+                            {bulkEditActiveFields.has('group') && (
+                                <div className="space-y-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/40 dark:bg-blue-900/10 p-4">
+                                    <div className="flex items-center gap-2">
+                                        <Users className="h-4 w-4 text-blue-500 shrink-0" />
+                                        <span className="text-sm font-medium">Group (Target)</span>
+                                    </div>
+                                    <GroupPicker search={bulkEditGroupSearch} onSearch={setBulkEditGroupSearch}
+                                        selectedId={bulkEditValues.groupId ?? null} selectedName={bulkEditValues.groupName ?? ''}
+                                        groups={groups}
+                                        onSelect={(name, id) => setBulkEditValues(p => ({ ...p, groupName: name, groupId: id }))} />
+                                </div>
+                            )}
+
+                            {bulkEditActiveFields.has('scopeTags') && (
+                                <div className="space-y-3 rounded-lg border border-green-200 dark:border-green-800 bg-green-50/40 dark:bg-green-900/10 p-4">
+                                    <div className="flex items-center gap-2">
+                                        <Shield className="h-4 w-4 text-green-500 shrink-0" />
+                                        <span className="text-sm font-medium">Scope Tags</span>
+                                    </div>
+                                    <MultiSelect options={scopeTagOptions} selected={bulkEditValues.scopeTagIds ?? []}
+                                        onChange={ids => setBulkEditValues(p => ({ ...p, scopeTagIds: ids }))} placeholder="Select scope tags…" />
+                                </div>
+                            )}
+                        </>)}
+
+                        {/* ══ STEP 3 — Done ══ */}
+                        {bulkWizardStep === 3 && (
+                            <div className="space-y-4">
+                                <div className="flex flex-col items-center gap-3 py-4 text-center">
+                                    <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
+                                        <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold">Changes applied to {selectedIds.size} row{selectedIds.size !== 1 ? 's' : ''}</p>
+                                        <p className="text-xs text-muted-foreground mt-1">Your selection is still active. What would you like to do next?</p>
+                                    </div>
+                                </div>
+
+                                {/* Summary of what was changed */}
+                                <div className="rounded-lg border bg-muted/30 p-3 space-y-2 text-xs">
+                                    <p className="font-medium text-muted-foreground uppercase tracking-wide text-[10px]">Changes applied</p>
+                                    {bulkEditActiveFields.has('filter') && (
+                                        <div className="flex items-center gap-2">
+                                            <Filter className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+                                            <span>Filter → <strong>{bulkEditValues.filterName || '— removed —'}</strong>{bulkEditValues.filterId ? ` (${bulkEditValues.filterType})` : ''}</span>
+                                        </div>
+                                    )}
+                                    {bulkEditActiveFields.has('action') && (
+                                        <div className="flex items-center gap-2">
+                                            <RefreshCw className="h-3.5 w-3.5 text-purple-500 shrink-0" />
+                                            <span>Action → <strong>{bulkEditValues.assignmentAction}</strong></span>
+                                        </div>
+                                    )}
+                                    {bulkEditActiveFields.has('group') && (
+                                        <div className="flex items-center gap-2">
+                                            <Users className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                                            <span>Group → <strong>{bulkEditValues.groupName || '—'}</strong></span>
+                                        </div>
+                                    )}
+                                    {bulkEditActiveFields.has('scopeTags') && (
+                                        <div className="flex items-center gap-2">
+                                            <Shield className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                                            <span>Scope Tags → <strong>{bulkEditValues.scopeTagIds?.length ? resolvedScopeTagNames(bulkEditValues.scopeTagIds) : '— cleared —'}</strong></span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-2 pt-1">
+                                    <Button className="w-full justify-start gap-2 bg-purple-600 hover:bg-purple-700 text-white"
+                                        disabled={!hasBuilderAccess}
+                                        onClick={() => { setBulkEditOpen(false); sendToDeployment(); }}>
+                                        <SendHorizonal className="h-4 w-4" />
+                                        Review &amp; Send {deployableRows.length} row{deployableRows.length !== 1 ? 's' : ''} to Deployment
+                                    </Button>
+                                    <Button variant="outline" className="w-full justify-start gap-2" onClick={openBulkEdit}>
+                                        <Edit2 className="h-4 w-4 text-yellow-500" />
+                                        Apply another bulk edit to the same selection
+                                    </Button>
+                                    <Button variant="outline" className="w-full justify-start gap-2"
+                                        disabled={!templateReady || !dataLoaded}
+                                        onClick={() => { setBulkEditOpen(false); generateRows('Include'); }}>
+                                        <CirclePlus className="h-4 w-4 text-green-600" />
+                                        Generate Include rows from selection
+                                    </Button>
+                                    <Button variant="outline" className="w-full justify-start gap-2"
+                                        disabled={!templateReady || !dataLoaded}
+                                        onClick={() => { setBulkEditOpen(false); generateRows('Exclude'); }}>
+                                        <CircleMinus className="h-4 w-4 text-red-600" />
+                                        Generate Exclude rows from selection
+                                    </Button>
+                                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground"
+                                        onClick={() => { setBulkEditOpen(false); clearSelection(); }}>
+                                        <X className="h-4 w-4" />
+                                        Close &amp; deselect all
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ── Wizard footer ── */}
+                    {bulkWizardStep < 3 && (
+                        <div className="shrink-0 flex items-center justify-between pt-3 border-t">
+                            <Button variant="ghost" size="sm" className="text-muted-foreground"
+                                onClick={() => bulkWizardStep === 1 ? setBulkEditOpen(false) : setBulkWizardStep(1)}>
+                                <ArrowLeft className="h-3.5 w-3.5 mr-1" />
+                                {bulkWizardStep === 1 ? 'Cancel' : 'Back'}
+                            </Button>
+                            {bulkWizardStep === 1 && (
+                                <Button size="sm" disabled={bulkEditActiveFields.size === 0}
+                                    onClick={() => setBulkWizardStep(2)}>
+                                    Next — Configure values
+                                    <ChevronDown className="h-3.5 w-3.5 ml-1 -rotate-90" />
+                                </Button>
+                            )}
+                            {bulkWizardStep === 2 && (
+                                <Button size="sm"
+                                    className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                                    onClick={applyBulkEdit}>
+                                    <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" />
+                                    Apply to {selectedIds.size} row{selectedIds.size !== 1 ? 's' : ''}
+                                </Button>
+                            )}
                         </div>
                     )}
                 </DialogContent>
