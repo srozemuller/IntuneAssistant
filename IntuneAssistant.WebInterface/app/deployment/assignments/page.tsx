@@ -928,6 +928,20 @@ function AssignmentRolloutContent() {
             );
         }
 
+        // isReadyForMigration / masterStatus are the authoritative server-side verdict.
+        // If the server says ready, show green arrow regardless of individual check fields
+        // (e.g. assignmentExists: false is expected for new Update assignments).
+        if (result.isReadyForMigration === true || result.masterStatus === 'compare_ready') {
+            return (
+                <div className="flex items-center justify-center">
+                    <div className="relative">
+                        <Circle className="h-5 w-5 text-green-500 fill-green-100 dark:fill-green-900/30"/>
+                        <ArrowUp className="h-3 w-3 text-gray-700 dark:text-gray-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"/>
+                    </div>
+                </div>
+            );
+        }
+
         // Check if already migrated
         if (result.isMigrated) {
             return (
@@ -958,18 +972,27 @@ function AssignmentRolloutContent() {
             );
         }
 
+        const isUpdateAction = result.csvRow?.AssignmentAction === 'Update';
+
         const allChecksPass = check.policyExists &&
             check.policyIsUnique !== false &&
             check.groupExists !== false &&
             check.correctAssignmentTypeProvided !== false &&
             check.correctAssignmentActionProvided &&
-            check.assignmentIsCompatible !== false;
+            check.assignmentIsCompatible !== false &&
+            // assignmentExists only matters for Update actions
+            (isUpdateAction ? check.assignmentExists !== false : true);
 
-        const hasWarnings = check.filterExist === false || check.filterIsUnique === false ||
-            check.correctFilterPlatform === false || check.correctFilterTypeProvided === false;
+        // Filter issues are warnings only when allChecksPass; if they cause failure they become errors
+        const filterIssues: string[] = [];
+        if (check.filterExist === false) filterIssues.push("Filter does not exist");
+        if (check.filterIsUnique === false) filterIssues.push("Multiple filters found");
+        if (check.correctFilterPlatform === false) filterIssues.push("Incorrect filter platform");
+        if (check.correctFilterTypeProvided === false) filterIssues.push("Invalid filter type");
+
+        const hasWarnings = filterIssues.length > 0;
 
         const errors: string[] = [];
-        const warnings: string[] = [];
         const compatibilityErrors: string[] = [];
 
         if (!check.policyExists) errors.push("Policy not found");
@@ -977,26 +1000,24 @@ function AssignmentRolloutContent() {
         if (check.groupExists === false) errors.push("Group not found");
         if (check.correctAssignmentTypeProvided === false) errors.push("Invalid assignment type");
         if (!check.correctAssignmentActionProvided) errors.push("Invalid assignment action");
-        if (check.assignmentExists === false) errors.push("Assignment does not exist in target");
-
-        if (check.filterExist === false) warnings.push("Filter not found");
-        if (check.filterIsUnique === false) warnings.push("Multiple filters found");
-        if (check.correctFilterPlatform === false) warnings.push("Incorrect filter platform");
-        if (check.correctFilterTypeProvided === false) warnings.push("Invalid filter type");
+        // assignmentExists is only relevant for Update actions
+        if (isUpdateAction && check.assignmentExists === false) errors.push("Assignment does not exist in target");
 
         // Add compatibility errors
         if (check.assignmentIsCompatible === false && check.compatibilityErrors && check.compatibilityErrors.length > 0) {
             compatibilityErrors.push(...check.compatibilityErrors);
         }
 
-        // IMPORTANT: If there are compatibility errors, always show red regardless of other checks
-        // Also show red if masterStatus is compare_failed (e.g. assignmentExists: false)
+        // IMPORTANT: If there are compatibility errors or checks fail or masterStatus is compare_failed → show red
         if (compatibilityErrors.length > 0 || !allChecksPass || result.masterStatus === 'compare_failed') {
-            // If the only reason it's failed isn't covered by errors/compatErrors (e.g. assignmentExists: false),
-            // surface the failureReason from the result
-            if (errors.length === 0 && compatibilityErrors.length === 0 && result.failureReason) {
-                errors.push(...result.failureReason.split('; ').filter(Boolean));
-            }
+            // Combine all errors: main check errors + escalated filter issues
+            const combinedErrors = [...errors, ...filterIssues];
+            const displayErrors = combinedErrors.length > 0
+                ? combinedErrors
+                : compatibilityErrors.length === 0 && result.failureReason
+                    ? result.failureReason.split('; ').filter(Boolean)
+                    : [];
+
             return (
                 <>
                     <div
@@ -1017,12 +1038,12 @@ function AssignmentRolloutContent() {
                         >
                             <div
                                 className="absolute -top-1 left-4 w-2 h-2 bg-red-50 dark:bg-red-900 border-l border-t border-red-200 dark:border-red-700 transform rotate-45"></div>
-                            {errors.length > 0 && (
+                            {displayErrors.length > 0 && (
                                 <>
                                     <p className="text-xs font-semibold text-red-800 dark:text-red-200 mb-2">Migration
                                         Check Errors:</p>
                                     <ul className="text-xs text-red-700 dark:text-red-300 space-y-1 mb-3">
-                                        {errors.map((error, idx) => (
+                                        {displayErrors.map((error, idx) => (
                                             <li key={idx} className="leading-relaxed">• {error}</li>
                                         ))}
                                     </ul>
@@ -1071,7 +1092,7 @@ function AssignmentRolloutContent() {
                             <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Filter
                                 Warnings:</p>
                             <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-1">
-                                {warnings.map((warning, idx) => (
+                                {filterIssues.map((warning, idx) => (
                                     <li key={idx} className="leading-relaxed">• {warning}</li>
                                 ))}
                             </ul>
@@ -1158,12 +1179,17 @@ function AssignmentRolloutContent() {
 
                 if (hasCompatibilityErrors) return 0;
 
+                // Use masterStatus as the authoritative source for failure
+                if (result.masterStatus === 'compare_failed') return 0;
+
+                const isUpdateAction = result.csvRow?.AssignmentAction === 'Update';
                 const allChecksPass = check.policyExists &&
                     check.policyIsUnique !== false &&
                     check.groupExists !== false &&
                     check.correctAssignmentTypeProvided !== false &&
                     check.correctAssignmentActionProvided &&
-                    check.assignmentIsCompatible !== false;
+                    check.assignmentIsCompatible !== false &&
+                    (isUpdateAction ? check.assignmentExists !== false : true);
 
                 // If checks fail, return 0 (errors)
                 if (!allChecksPass) return 0;
