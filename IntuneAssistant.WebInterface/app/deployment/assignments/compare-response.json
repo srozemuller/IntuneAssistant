@@ -1,0 +1,132 @@
+{
+  "id": "44a4e150-ff6c-4165-9f44-bc480d1fdf97",
+  "policy": {
+    "@odata.type": null,
+    "type": null,
+    "policyType": "SettingsCatalog",
+    "policySubType": null,
+    "id": "abe58e45-e68e-4aad-95e1-243f76f3bb92",
+    "isAssigned": true,
+    "createdDateTime": null,
+    "description": null,
+    "lastModifiedDateTime": null,
+    "name": "W1x - AP - Windows Hello for Business - Cloud Trust - v1.2",
+    "assignments": [
+      {
+        "id": "abe58e45-e68e-4aad-95e1-243f76f3bb92_1fb076ae-bef3-46f3-8ed2-8b65670ffc2c",
+        "sourceId": "abe58e45-e68e-4aad-95e1-243f76f3bb92",
+        "target": {
+          "groupId": "1fb076ae-bef3-46f3-8ed2-8b65670ffc2c",
+          "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+          "deviceAndAppManagementAssignmentFilterId": "1cc6d4cf-944f-43bc-877e-14c8b714bc98",
+          "deviceAndAppManagementAssignmentFilterType": "Include"
+        }
+      },
+      {
+        "id": "abe58e45-e68e-4aad-95e1-243f76f3bb92_2b6c511b-19b8-4b66-9c7f-5861657d9ede",
+        "sourceId": "abe58e45-e68e-4aad-95e1-243f76f3bb92",
+        "target": {
+          "groupId": "2b6c511b-19b8-4b66-9c7f-5861657d9ede",
+          "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+          "deviceAndAppManagementAssignmentFilterId": "db5392c6-6b5d-45f8-a774-a8633ce6b392",
+          "deviceAndAppManagementAssignmentFilterType": "Include"
+        }
+      }
+    ],
+    "settingCount": 0,
+    "platform": "Windows",
+    "settings": null,
+    "deviceConfigSettings": null,
+    "groupPolicySettings": null,
+    "scopeTagIds": [
+      "0",
+      "4",
+      "6"
+    ]
+  },
+  "policies": [
+    {
+      "@odata.type": null,
+      "type": null,
+      "policyType": "SettingsCatalog",
+      "policySubType": null,
+      "id": "abe58e45-e68e-4aad-95e1-243f76f3bb92",
+      "isAssigned": true,
+      "createdDateTime": null,
+      "description": null,
+      "lastModifiedDateTime": null,
+      "name": "W1x - AP - Windows Hello for Business - Cloud Trust - v1.2",
+      "assignments": [
+        {
+          "id": "abe58e45-e68e-4aad-95e1-243f76f3bb92_1fb076ae-bef3-46f3-8ed2-8b65670ffc2c",
+          "sourceId": "abe58e45-e68e-4aad-95e1-243f76f3bb92",
+          "target": {
+            "groupId": "1fb076ae-bef3-46f3-8ed2-8b65670ffc2c",
+            "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+            "deviceAndAppManagementAssignmentFilterId": "1cc6d4cf-944f-43bc-877e-14c8b714bc98",
+            "deviceAndAppManagementAssignmentFilterType": "Include"
+          }
+        },
+        {
+          "id": "abe58e45-e68e-4aad-95e1-243f76f3bb92_2b6c511b-19b8-4b66-9c7f-5861657d9ede",
+          "sourceId": "abe58e45-e68e-4aad-95e1-243f76f3bb92",
+          "target": {
+            "groupId": "2b6c511b-19b8-4b66-9c7f-5861657d9ede",
+            "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+            "deviceAndAppManagementAssignmentFilterId": "db5392c6-6b5d-45f8-a774-a8633ce6b392",
+            "deviceAndAppManagementAssignmentFilterType": "Include"
+          }
+        }
+      ],
+      "settingCount": 0,
+      "platform": "Windows",
+      "settings": null,
+      "deviceConfigSettings": null,
+      "groupPolicySettings": null,
+      "scopeTagIds": [
+        "0",
+        "4",
+        "6"
+      ]
+    }
+  ],
+  "providedPolicyName": "W1x - AP - Windows Hello for Business - Cloud Trust - v1.2",
+  "assignedGroups": [],
+  "assignmentId": "e914925e-b017-4ae8-8991-aaa2c29aa979",
+  "groupToMigrate": "AAD_DG_AutoPilot-Devices-Shared-All",
+  "assignmentType": "GroupAssignment",
+  "assignmentDirection": "Include",
+  "assignmentAction": "Update",
+  "filterToMigrate": {
+    "id": null,
+    "createdDateTime": "0001-01-01T00:00:00+00:00",
+    "lastModifiedDateTime": "0001-01-01T00:00:00+00:00",
+    "displayName": null,
+    "description": null,
+    "platform": null,
+    "roleScopeTags": null,
+    "rule": null,
+    "assignmentFilterManagementType": null
+  },
+  "filterType": "none",
+  "filterName": null,
+  "isMigrated": false,
+  "excludeGroupFromSource": true,
+  "removeGroupFromSource": false,
+  "isReadyForMigration": false,
+  "migrationCheckResult": {
+    "assignmentExists": false,
+    "policyExists": true,
+    "policyIsUnique": true,
+    "groupExists": true,
+    "correctAssignmentTypeProvided": true,
+    "correctAssignmentActionProvided": true,
+    "filterExist": null,
+    "filterIsUnique": null,
+    "correctFilterPlatform": null,
+    "correctFilterTypeProvided": null,
+    "assignmentIsCompatible": true,
+    "compatibilityErrors": []
+  },
+  "warnings": []
+},

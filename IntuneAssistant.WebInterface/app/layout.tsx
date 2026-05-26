@@ -28,6 +28,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
         <head>
+            <Script src="https://t.contentsquare.net/uxa/ed2b918b56b97.js" strategy="afterInteractive" />
             {GA_MEASUREMENT_ID && (
                 <>
                     <Script
