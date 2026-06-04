@@ -146,31 +146,42 @@ function MessageCard({ message, isRead, isSelected, onToggleSelect }: MessageCar
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function MessageCenterPage() {
-    const { messages, isLoading, error, readIds, unreadCount, markRead, markUnread, markAllRead, refetch } = useMessageCenter();
+    const { messages, isLoading, error, readIds, markRead, markUnread, markAllRead, refetch } = useMessageCenter();
 
     const [activeTab, setActiveTab] = useState<FilterTab>("all");
     const [selected, setSelected] = useState<Set<string>>(new Set());
 
+    // ── Filter out expired messages ───────────────────────────────────────────
+    const activeMessages = useMemo(() => {
+        const now = new Date();
+        return messages.filter(m => !m.expirationDate || new Date(m.expirationDate) > now);
+    }, [messages]);
+
+    const activeUnreadCount = useMemo(
+        () => activeMessages.filter(m => !readIds.includes(m.id)).length,
+        [activeMessages, readIds],
+    );
+
     // ── Filter tabs with live counts ──────────────────────────────────────────
     const tabs: { key: FilterTab; label: string; count?: number }[] = useMemo(() => [
-        { key: "all",         label: "All",         count: messages.length },
-        { key: "unread",      label: "Unread",      count: unreadCount },
-        { key: "maintenance", label: "Maintenance",  count: messages.filter(m => m.messageType === 2).length },
-        { key: "feature",     label: "Feature",     count: messages.filter(m => m.messageType === 3).length },
-        { key: "warning",     label: "Warning",     count: messages.filter(m => m.messageType === 1).length },
-        { key: "information", label: "Information", count: messages.filter(m => m.messageType === 0).length },
-    ], [messages, unreadCount]);
+        { key: "all",         label: "All",         count: activeMessages.length },
+        { key: "unread",      label: "Unread",      count: activeUnreadCount },
+        { key: "maintenance", label: "Maintenance",  count: activeMessages.filter(m => m.messageType === 2).length },
+        { key: "feature",     label: "Feature",     count: activeMessages.filter(m => m.messageType === 3).length },
+        { key: "warning",     label: "Warning",     count: activeMessages.filter(m => m.messageType === 1).length },
+        { key: "information", label: "Information", count: activeMessages.filter(m => m.messageType === 0).length },
+    ], [activeMessages, activeUnreadCount]);
 
     const visible = useMemo(() => {
         switch (activeTab) {
-            case "unread":      return messages.filter(m => !readIds.includes(m.id));
-            case "maintenance": return messages.filter(m => m.messageType === 2);
-            case "feature":     return messages.filter(m => m.messageType === 3);
-            case "warning":     return messages.filter(m => m.messageType === 1);
-            case "information": return messages.filter(m => m.messageType === 0);
-            default:            return messages;
+            case "unread":      return activeMessages.filter(m => !readIds.includes(m.id));
+            case "maintenance": return activeMessages.filter(m => m.messageType === 2);
+            case "feature":     return activeMessages.filter(m => m.messageType === 3);
+            case "warning":     return activeMessages.filter(m => m.messageType === 1);
+            case "information": return activeMessages.filter(m => m.messageType === 0);
+            default:            return activeMessages;
         }
-    }, [messages, readIds, activeTab]);
+    }, [activeMessages, readIds, activeTab]);
 
     // ── Select helpers ────────────────────────────────────────────────────────
     const allVisibleSelected = visible.length > 0 && visible.every(m => selected.has(m.id));
@@ -222,9 +233,9 @@ export default function MessageCenterPage() {
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
                             Message Center
-                            {unreadCount > 0 && (
+                            {activeUnreadCount > 0 && (
                                 <span className="inline-flex items-center justify-center h-6 min-w-6 px-1.5 rounded-full bg-orange-500 text-white text-xs font-bold">
-                                    {unreadCount}
+                                    {activeUnreadCount}
                                 </span>
                             )}
                         </h1>
@@ -319,7 +330,7 @@ export default function MessageCenterPage() {
                             variant="ghost"
                             size="sm"
                             onClick={handleMarkAll}
-                            disabled={unreadCount === 0}
+                            disabled={activeUnreadCount === 0}
                             className="gap-1.5 text-muted-foreground"
                         >
                             <CheckCheck className="h-3.5 w-3.5" />

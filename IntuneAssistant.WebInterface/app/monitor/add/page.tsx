@@ -377,7 +377,7 @@ export default function AddMonitorPage() {
     const { customerData } = useCustomer();
 
     const hasEnterpriseLicense = useMemo(() =>
-        customerData?.licenses?.some(l => l.licenseType === 2 && l.isActive) ?? false,
+        customerData?.licenses?.some(l => l.licenseType === 1 && l.isActive) ?? false,
     [customerData]);
 
     // ── Wizard state ─────────────────────────────────────────────────────────

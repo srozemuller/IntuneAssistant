@@ -84,11 +84,10 @@ interface CustomerProviderProps {
     children: ReactNode;
 }
 
-// In your CustomerContext file, add this helper function
-// licenseType 1 = Assignments Manager (required for the Migration Builder)
+// licenseType 1 = Assignments Manager / Enterprise (required for Migration Builder etc.)
 export const hasAssignmentsManagerLicense = (customerData: CustomerData | null): boolean => {
     if (!customerData?.licenses) return false;
-    return customerData.licenses.some(l => l.licenseType === 2 && l.isActive);
+    return customerData.licenses.some(l => l.licenseType === 1 && l.isActive);
 };
 
 export const hasTenantsNeedingConsent = (customerData: any): boolean => {
