@@ -318,7 +318,7 @@ export default function CustomerPage() {
             case 0:
                 return 'Assistant';
             case 1:
-                return 'Assignments Manager';
+                return 'Enterprise';
             default:
                 return 'Unknown';
         }
@@ -329,8 +329,6 @@ export default function CustomerPage() {
             case 0:
                 return 'outline';
             case 1:
-                return 'secondary';
-            case 2:
                 return 'default';
             default:
                 return 'destructive';
@@ -1017,8 +1015,6 @@ export default function CustomerPage() {
             case 0:
                 return 'Community';
             case 1:
-                return 'Standard';
-            case 2:
                 return 'Enterprise';
             default:
                 return 'Unknown';
@@ -1030,8 +1026,6 @@ export default function CustomerPage() {
             case 0:
                 return 'outline';
             case 1:
-                return 'secondary';
-            case 2:
                 return 'default';
             default:
                 return 'destructive';

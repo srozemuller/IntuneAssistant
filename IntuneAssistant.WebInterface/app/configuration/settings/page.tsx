@@ -99,6 +99,8 @@ interface FlatSetting extends Record<string, unknown> {
     settingValue: string;
     source: 'catalog' | 'deviceconfig' | 'grouppolicy';
     childSettingInfo: { name: string; value: string }[] | null;
+    /** Pre-flattened text of all child settings for full-text search. */
+    _searchText?: string;
     omaUri?: string;
     settingId?: string;
     assignmentTargets: string[];
@@ -133,6 +135,12 @@ function flattenPolicies(policies: PolicyResponse[], source: FlatSetting['source
                     value: c.value ?? '',
                 })) ?? null;
 
+                // Pre-computed search blob — includes child setting names + values so
+                // DataTable search can find them even without expanding the row.
+                const childSearchText = childInfo
+                    ? childInfo.map(c => `${c.name} ${c.value}`).join(' ')
+                    : '';
+
                 rows.push({
                     _id: `${source}-${policy.id}-${s.id}`,
                     policyId: policy.id, policyName: policy.name ?? '',
@@ -141,6 +149,7 @@ function flattenPolicies(policies: PolicyResponse[], source: FlatSetting['source
                     settingName: resolvedName, settingValue: resolvedValue,
                     settingId: s.id, source,
                     childSettingInfo: childInfo?.length ? childInfo : null,
+                    _searchText: childSearchText,
                     assignmentTargets, status: 'ok', conflictPeers: [],
                 });
             }

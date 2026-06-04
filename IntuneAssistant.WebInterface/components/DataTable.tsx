@@ -368,14 +368,19 @@ function DataTableComponent(props: DataTableProps) {
 
         const searchLower = debouncedSearchTerm.toLowerCase();
 
-        return data.filter(row => {
-            // Search through ALL properties in the row, not just the column keys
-            return Object.entries(row).some(([_key, value]) => {
-                if (value === null || value === undefined) return false;
-                const stringValue = String(value).toLowerCase();
-                return stringValue.includes(searchLower);
-            });
-        });
+        /** Recursively extract all leaf string values from any value. */
+        function matchesSearch(value: unknown): boolean {
+            if (value === null || value === undefined) return false;
+            if (Array.isArray(value)) return value.some(item => matchesSearch(item));
+            if (typeof value === 'object') {
+                return Object.values(value as Record<string, unknown>).some(v => matchesSearch(v));
+            }
+            return String(value).toLowerCase().includes(searchLower);
+        }
+
+        return data.filter(row =>
+            Object.values(row).some(value => matchesSearch(value))
+        );
     }, [data, debouncedSearchTerm]);
 
     // Memoize sorted data to prevent unnecessary recalculations

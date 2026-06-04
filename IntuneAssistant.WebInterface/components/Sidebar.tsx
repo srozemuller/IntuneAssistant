@@ -246,7 +246,7 @@ export function Sidebar() {
             return false;
         }
 
-        return customerData.licenses.some(license => license.licenseType === 2 && license.isActive);
+        return customerData.licenses.some(license => license.licenseType === 1 && license.isActive);
     };
 
     const isBetaTester = (): boolean => {
