@@ -4,6 +4,7 @@ import { useMsal } from "@azure/msal-react";
 import { useApiRequest } from "@/hooks/useApiRequest";
 import { MESSAGE_CENTER_ENDPOINT } from "@/lib/constants";
 import type { MessageCenterItem, MessageCenterResponse } from "@/types/messageCenter";
+import { useCustomer } from "@/contexts/CustomerContext";
 
 const LS_KEY = "ia_message_center_read_ids";
 
@@ -37,6 +38,7 @@ export function MessageCenterProvider({ children }: { children: React.ReactNode 
     // get accounts from useMsal and guard the fetch until accounts are present.
     const { accounts } = useMsal();
     const { request } = useApiRequest();
+    const { isActiveCustomer, customerLoading } = useCustomer();
 
     // Keep request in a ref so fetchMessages (stable callback) always
     // uses the latest token/tenant without being recreated on every render.
@@ -67,13 +69,17 @@ export function MessageCenterProvider({ children }: { children: React.ReactNode 
         }
     }, []); // stable — requestRef.current is always current
 
-    // Trigger once as soon as the MSAL account is available (same guard as all other pages).
+    // Trigger once as soon as the MSAL account is available AND the customer is
+    // confirmed as active/onboarded. Skip entirely for unauthenticated or
+    // non-onboarded users to avoid a 403/permission error.
     useEffect(() => {
         if (accounts.length === 0) return;
+        if (customerLoading) return;       // wait for customer data to resolve
+        if (!isActiveCustomer) return;     // not onboarded – skip silently
         if (fetchedRef.current) return;
         fetchedRef.current = true;
         fetchMessages();
-    }, [accounts.length, fetchMessages]);
+    }, [accounts.length, customerLoading, isActiveCustomer, fetchMessages]);
 
     const markRead = useCallback((ids: string[]) => {
         setReadIds(prev => {
