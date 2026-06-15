@@ -22,7 +22,8 @@ import {
     ChevronUp,
     User,
     Calendar,
-    Trash2
+    Trash2,
+    ShieldCheck
 } from 'lucide-react';
 import { useApiRequest } from '@/hooks/useApiRequest';
 import { CancelledCard } from '@/components/CancelledCard';
@@ -37,6 +38,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { AcceptDriftDialog } from '@/components/AcceptDriftDialog';
 
 interface User {
     id: string | null;
@@ -95,6 +97,7 @@ interface DriftedProperty {
 interface Drift {
     id: string;
     monitorId: string;
+    tenantId: string;
     resourceType: string;
     baselineResourceDisplayName: string;
     firstReportedDateTime: string;
@@ -130,6 +133,10 @@ export default function MonitorDetailsPage() {
     const [isBaselineExpanded, setIsBaselineExpanded] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    // Accept drift dialog
+    const [selectedDrift, setSelectedDrift] = useState<Drift | null>(null);
+    const [isAcceptDriftOpen, setIsAcceptDriftOpen] = useState(false);
 
 
     const fetchData = async () => {
@@ -723,24 +730,40 @@ export default function MonitorDetailsPage() {
                                                         First reported: {new Date(drift.firstReportedDateTime).toLocaleDateString()}
                                                     </p>
                                                 </div>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => toggleDriftExpansion(drift.id)}
-                                                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-                                                >
-                                                    {isExpanded ? (
-                                                        <>
-                                                            <ChevronUp className="h-5 w-5 mr-1" />
-                                                            Hide
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <ChevronDown className="h-5 w-5 mr-1" />
-                                                            Details
-                                                        </>
+                                                <div className="flex items-center gap-2">
+                                                    {isActive && (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                setSelectedDrift(drift);
+                                                                setIsAcceptDriftOpen(true);
+                                                            }}
+                                                            className="text-amber-600 border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                                                        >
+                                                            <ShieldCheck className="h-4 w-4 mr-1" />
+                                                            Accept Drift
+                                                        </Button>
                                                     )}
-                                                </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => toggleDriftExpansion(drift.id)}
+                                                        className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                                                    >
+                                                        {isExpanded ? (
+                                                            <>
+                                                                <ChevronUp className="h-5 w-5 mr-1" />
+                                                                Hide
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <ChevronDown className="h-5 w-5 mr-1" />
+                                                                Details
+                                                            </>
+                                                        )}
+                                                    </Button>
+                                                </div>
                                             </div>
                                         </CardHeader>
 
@@ -791,6 +814,17 @@ export default function MonitorDetailsPage() {
                     )}
                 </CardContent>
             </Card>
+
+            {/* Accept Drift Dialog */}
+            <AcceptDriftDialog
+                drift={selectedDrift}
+                open={isAcceptDriftOpen}
+                onOpenChange={setIsAcceptDriftOpen}
+                onSuccess={() => {
+                    setSelectedDrift(null);
+                    fetchData();
+                }}
+            />
 
             {/* Resource Details Dialog */}
             <Dialog open={isResourceDialogOpen} onOpenChange={setIsResourceDialogOpen}>

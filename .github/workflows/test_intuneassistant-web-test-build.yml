@@ -1,0 +1,233 @@
+name: CI - Build & Prerelease (TEST)
+
+on:
+  push:
+    branches: [ test ]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+  WORKING_DIR: IntuneAssistant.WebInterface
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.ver.outputs.semver }}
+      tag: ${{ steps.ver.outputs.tag }}
+      short_sha: ${{ steps.ver.outputs.short_sha }}
+      full_sha: ${{ steps.ver.outputs.full_sha }}
+      build_time: ${{ steps.ver.outputs.build_time }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+
+      - name: Compute version info
+        id: ver
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          VERSION=$(cat version.txt | tr -d '[:space:]')
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          FULL_SHA=$(git rev-parse HEAD)
+          BUILD_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+          SEMVER="${VERSION}-test+sha.${SHORT_SHA}"
+          TAG="v${SEMVER}"
+
+          echo "version=${SEMVER}" >> $GITHUB_OUTPUT
+          echo "semver=${SEMVER}" >> $GITHUB_OUTPUT
+          echo "short_sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "full_sha=${FULL_SHA}" >> $GITHUB_OUTPUT
+          echo "build_time=${BUILD_TIME}" >> $GITHUB_OUTPUT
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
+          echo "Version: ${VERSION}"
+          echo "SemVer: ${SEMVER}"
+          echo "Tag: ${TAG}"
+          echo "Commit: ${SHORT_SHA}"
+
+      - name: Install dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: npm ci
+
+      - name: Build (validates the code compiles and types are correct)
+        working-directory: ${{ env.WORKING_DIR }}
+        run: npm run build
+        env:
+          NEXT_PUBLIC_APP_ENV: test
+
+      - name: Write branding metadata (TEST)
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          cat <<EOF > branding.json
+          {
+            "Version": "${{ steps.ver.outputs.version }}",
+            "CommitHash": "${{ steps.ver.outputs.short_sha }}",
+            "FullCommitHash": "${{ steps.ver.outputs.full_sha }}",
+            "BuildDate": "${{ steps.ver.outputs.build_time }}",
+            "Environment": "TEST"
+          }
+          EOF
+
+      - name: Package build artifact
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          mkdir -p release
+          cp -r .next release/
+          cp -r public release/ 2>/dev/null || true
+          cp package.json release/
+          cp package-lock.json release/
+          cp next.config.ts release/
+          cp netlify.toml release/
+          cp version.txt release/
+          cp branding.json release/
+          [ -f components.json ] && cp components.json release/ || true
+          zip -r ../app.zip release/
+
+      - name: Upload deployable package
+        uses: actions/upload-artifact@v4
+        with:
+          name: intuneassistant-web-package
+          path: app.zip
+          retention-days: 7
+
+  release:
+    name: Create Release & Changelog
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create git tag
+        run: |
+          TAG="${{ needs.build.outputs.tag }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists"
+          else
+            git tag -a "$TAG" -m "TEST build ${{ needs.build.outputs.version }}"
+            git push origin "$TAG"
+            echo "Tag $TAG created and pushed"
+          fi
+        continue-on-error: true
+
+      - name: Get latest production release
+        id: latest_release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST_TAG=$(gh release list \
+            --exclude-drafts \
+            --exclude-pre-releases \
+            --json tagName,isPrerelease \
+            --jq '[.[] | select(.isPrerelease == false)] | first | .tagName')
+
+          if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "null" ]; then
+            echo "No production releases found, using first commit"
+            LATEST_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
+
+          echo "latest_tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
+          echo "Latest production release: ${LATEST_TAG}"
+
+      - name: Generate Changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          fromTag: ${{ steps.latest_release.outputs.latest_tag }}
+          toTag: ${{ needs.build.outputs.tag }}
+          configurationJson: |
+            {
+              "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+              "pr_template": "- #{{TITLE}} by @#{{AUTHOR}} in ##{{NUMBER}}",
+              "categories": [
+                {
+                  "title": "## Breaking Changes",
+                  "labels": ["breaking", "breaking-change"]
+                },
+                {
+                  "title": "## Features",
+                  "labels": ["feature", "feat", "enhancement"]
+                },
+                {
+                  "title": "## Bug Fixes",
+                  "labels": ["bug", "fix", "bugfix"]
+                },
+                {
+                  "title": "## Tests",
+                  "labels": ["test", "tests"]
+                },
+                {
+                  "title": "## Documentation",
+                  "labels": ["documentation", "docs"]
+                },
+                {
+                  "title": "## Maintenance",
+                  "labels": ["chore", "maintenance", "refactor"]
+                },
+                {
+                  "title": "## Performance",
+                  "labels": ["performance", "perf"]
+                },
+                {
+                  "title": "## Security",
+                  "labels": ["security"]
+                }
+              ]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download app.zip
+        uses: actions/download-artifact@v4
+        with:
+          name: intuneassistant-web-package
+          path: ./
+
+      - name: Create GitHub prerelease
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.build.outputs.tag }}
+          name: "TEST ${{ needs.build.outputs.version }} - BUILT"
+          prerelease: true
+          body: |
+            **Environment:** TEST - Built & Packaged
+            **Version:** ${{ needs.build.outputs.version }}
+            **Commit:** [${{ needs.build.outputs.short_sha }}](https://github.com/${{ github.repository }}/commit/${{ needs.build.outputs.full_sha }})
+            **Built:** ${{ needs.build.outputs.build_time }} (UTC)
+
+            This prerelease can be promoted to production using the production deploy workflow.
+
+            ---
+
+            ## Changes
+
+            ${{ steps.changelog.outputs.changelog }}
+
+            ---
+
+            <details>
+            <summary>Version Details</summary>
+
+            - **SemVer:** `${{ needs.build.outputs.version }}`
+            - **Full SHA:** `${{ needs.build.outputs.full_sha }}`
+            - **Build Time:** ${{ needs.build.outputs.build_time }}
+            </details>
+          files: app.zip

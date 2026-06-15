@@ -74,6 +74,7 @@ export const RBAC_ANALYSIS_ENDPOINT = `${RBAC_ENDPOINT}/analysis`;
 
 export const MONITOR_CONFIGURATION_ENDPOINT = `${API_BASE_URL}/monitor/configuration`;
 export const MONITOR_CONFIGURATION_DRIFTS_ENDPOINT = `${API_BASE_URL}/monitor/configuration/drifts`;
+export const MONITOR_CONFIGURATION_DRIFT_ACCEPT_ENDPOINT = (driftId: string) => `${API_BASE_URL}/monitor/configuration/drifts/${driftId}/accept`;
 export const MONITOR_CONFIGURATION_RESULTS_ENDPOINT = `${API_BASE_URL}/monitor/configuration/results`;
 export const MONITOR_CONFIGURATION_SNAPSHOTS_JOBS = `${API_BASE_URL}/monitor/snapshots/jobs`;
 

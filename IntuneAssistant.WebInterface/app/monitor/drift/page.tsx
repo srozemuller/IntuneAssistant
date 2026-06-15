@@ -16,7 +16,8 @@ import {
     Filter,
     ChevronDown,
     ChevronUp,
-    AlertCircle
+    AlertCircle,
+    ShieldCheck
 } from 'lucide-react';
 import { useApiRequest } from '@/hooks/useApiRequest';
 import { CancelledCard } from '@/components/CancelledCard';
@@ -24,6 +25,7 @@ import { MultiSelect, Option } from '@/components/ui/multi-select';
 import {MONITOR_CONFIGURATION_ENDPOINT,
     MONITOR_CONFIGURATION_DRIFTS_ENDPOINT,
 } from '@/lib/constants';
+import { AcceptDriftDialog, ConfigurationDrift } from "@/components/AcceptDriftDialog";
 
 
 interface DriftedProperty {
@@ -65,6 +67,10 @@ export default function DriftsOverviewPage() {
     const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
 
     const [expandedDrifts, setExpandedDrifts] = useState<Set<string>>(new Set());
+
+    // Accept drift dialog
+    const [selectedDrift, setSelectedDrift] = useState<ConfigurationDrift | null>(null);
+    const [isAcceptDriftOpen, setIsAcceptDriftOpen] = useState(false);
 
     // Load data from context on mount if available
     useEffect(() => {
@@ -441,14 +447,30 @@ export default function DriftsOverviewPage() {
                                                         Monitor: {getMonitorName(drift.monitorId as string)}
                                                     </p>
                                                 </div>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => toggleDriftExpansion(drift.id as string)}
-                                                    className="text-yellow-400 hover:text-yellow-500"
-                                                >
-                                                    {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                                                </Button>
+                                                <div className="flex items-center gap-2">
+                                                    {isActive && (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                setSelectedDrift(drift as unknown as ConfigurationDrift);
+                                                                setIsAcceptDriftOpen(true);
+                                                            }}
+                                                            className="text-amber-600 border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                                                        >
+                                                            <ShieldCheck className="h-4 w-4 mr-1" />
+                                                            Accept Drift
+                                                        </Button>
+                                                    )}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => toggleDriftExpansion(drift.id as string)}
+                                                        className="text-yellow-400 hover:text-yellow-500"
+                                                    >
+                                                        {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                                                    </Button>
+                                                </div>
                                             </div>
                                         </CardHeader>
 
@@ -519,6 +541,17 @@ export default function DriftsOverviewPage() {
                         </CardContent>
                     </Card></>
             )}
+
+            {/* Accept Drift Dialog */}
+            <AcceptDriftDialog
+                drift={selectedDrift}
+                open={isAcceptDriftOpen}
+                onOpenChange={setIsAcceptDriftOpen}
+                onSuccess={() => {
+                    setSelectedDrift(null);
+                    fetchData();
+                }}
+            />
         </div>
     );
 }
