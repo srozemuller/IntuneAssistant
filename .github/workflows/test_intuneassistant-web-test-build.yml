@@ -62,9 +62,6 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
         run: npm run build
         env:
-          NEXT_PUBLIC_AZURE_AD_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_AZURE_AD_CLIENT_ID }}
-          NEXT_PUBLIC_AZURE_AD_TENANT_ID: ${{ secrets.NEXT_PUBLIC_AZURE_AD_TENANT_ID }}
-          NEXT_PUBLIC_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_REDIRECT_URI_TEST }}
           NEXT_PUBLIC_APP_ENV: test
 
       - name: Write branding metadata (TEST)
