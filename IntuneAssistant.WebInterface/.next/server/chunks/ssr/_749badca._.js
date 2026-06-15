@@ -312,14 +312,15 @@ function DataTableComponent(props) {
     const filteredData = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useMemo"])(()=>{
         if (!debouncedSearchTerm.trim()) return data;
         const searchLower = debouncedSearchTerm.toLowerCase();
-        return data.filter((row)=>{
-            // Search through ALL properties in the row, not just the column keys
-            return Object.entries(row).some(([_key, value])=>{
-                if (value === null || value === undefined) return false;
-                const stringValue = String(value).toLowerCase();
-                return stringValue.includes(searchLower);
-            });
-        });
+        /** Recursively extract all leaf string values from any value. */ function matchesSearch(value) {
+            if (value === null || value === undefined) return false;
+            if (Array.isArray(value)) return value.some((item)=>matchesSearch(item));
+            if (typeof value === 'object') {
+                return Object.values(value).some((v)=>matchesSearch(v));
+            }
+            return String(value).toLowerCase().includes(searchLower);
+        }
+        return data.filter((row)=>Object.values(row).some((value)=>matchesSearch(value)));
     }, [
         data,
         debouncedSearchTerm
@@ -397,7 +398,7 @@ function DataTableComponent(props) {
                 className: "h-4 w-4 text-muted-foreground"
             }, void 0, false, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 445,
+                lineNumber: 450,
                 columnNumber: 20
             }, this);
         }
@@ -405,13 +406,13 @@ function DataTableComponent(props) {
             className: "h-4 w-4 text-foreground"
         }, void 0, false, {
             fileName: "[project]/components/DataTable.tsx",
-            lineNumber: 449,
+            lineNumber: 454,
             columnNumber: 15
         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
             className: "h-4 w-4 text-foreground"
         }, void 0, false, {
             fileName: "[project]/components/DataTable.tsx",
-            lineNumber: 450,
+            lineNumber: 455,
             columnNumber: 15
         }, this);
     }, [
@@ -539,7 +540,7 @@ function DataTableComponent(props) {
                                 className: "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 566,
+                                lineNumber: 571,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -550,7 +551,7 @@ function DataTableComponent(props) {
                                 className: "w-full pl-10 pr-10 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600"
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 567,
+                                lineNumber: 572,
                                 columnNumber: 25
                             }, this),
                             searchTerm && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -560,18 +561,18 @@ function DataTableComponent(props) {
                                     className: "h-4 w-4"
                                 }, void 0, false, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 579,
+                                    lineNumber: 584,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 575,
+                                lineNumber: 580,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 565,
+                        lineNumber: 570,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DropdownMenu"], {
@@ -587,19 +588,19 @@ function DataTableComponent(props) {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/components/DataTable.tsx",
-                                            lineNumber: 588,
+                                            lineNumber: 593,
                                             columnNumber: 33
                                         }, this),
                                         "Columns"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 587,
+                                    lineNumber: 592,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 586,
+                                lineNumber: 591,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DropdownMenuContent"], {
@@ -610,12 +611,12 @@ function DataTableComponent(props) {
                                         children: "Toggle columns"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 593,
+                                        lineNumber: 598,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DropdownMenuSeparator"], {}, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 594,
+                                        lineNumber: 599,
                                         columnNumber: 29
                                     }, this),
                                     columns.filter((col)=>col.key !== '_select') // Don't allow hiding selection column
@@ -629,37 +630,37 @@ function DataTableComponent(props) {
                                                         className: "h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/DataTable.tsx",
-                                                        lineNumber: 605,
+                                                        lineNumber: 610,
                                                         columnNumber: 49
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$eye$2d$off$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__EyeOff$3e$__["EyeOff"], {
                                                         className: "h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/DataTable.tsx",
-                                                        lineNumber: 607,
+                                                        lineNumber: 612,
                                                         columnNumber: 49
                                                     }, this),
                                                     column.label
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 603,
+                                                lineNumber: 608,
                                                 columnNumber: 41
                                             }, this)
                                         }, column.key, false, {
                                             fileName: "[project]/components/DataTable.tsx",
-                                            lineNumber: 598,
+                                            lineNumber: 603,
                                             columnNumber: 37
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 592,
+                                lineNumber: 597,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 585,
+                        lineNumber: 590,
                         columnNumber: 21
                     }, this),
                     searchTerm && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -672,13 +673,13 @@ function DataTableComponent(props) {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 617,
+                        lineNumber: 622,
                         columnNumber: 25
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 564,
+                lineNumber: 569,
                 columnNumber: 17
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -734,19 +735,19 @@ function DataTableComponent(props) {
                                                             children: column.label
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/DataTable.tsx",
-                                                            lineNumber: 679,
+                                                            lineNumber: 684,
                                                             columnNumber: 49
                                                         }, this),
                                                         column.sortable !== false && column.key !== '_select' && getSortIcon(column.key)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/DataTable.tsx",
-                                                    lineNumber: 667,
+                                                    lineNumber: 672,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 666,
+                                                lineNumber: 671,
                                                 columnNumber: 41
                                             }, this),
                                             column.key !== '_select' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -757,29 +758,29 @@ function DataTableComponent(props) {
                                                     className: "absolute right-0 top-0 h-full w-px bg-transparent group-hover:bg-primary/50 group-active:bg-primary transition-colors"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/DataTable.tsx",
-                                                    lineNumber: 693,
+                                                    lineNumber: 698,
                                                     columnNumber: 49
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 688,
+                                                lineNumber: 693,
                                                 columnNumber: 45
                                             }, this)
                                         ]
                                     }, column.key, true, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 658,
+                                        lineNumber: 663,
                                         columnNumber: 37
                                     }, this);
                                 })
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 652,
+                                lineNumber: 657,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/DataTable.tsx",
-                            lineNumber: 651,
+                            lineNumber: 656,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -799,7 +800,7 @@ function DataTableComponent(props) {
                                             getCellValue: getCellValue
                                         }, void 0, false, {
                                             fileName: "[project]/components/DataTable.tsx",
-                                            lineNumber: 707,
+                                            lineNumber: 712,
                                             columnNumber: 41
                                         }, this),
                                         expandedContent && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
@@ -809,18 +810,18 @@ function DataTableComponent(props) {
                                                 children: expandedContent
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 719,
+                                                lineNumber: 724,
                                                 columnNumber: 49
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/DataTable.tsx",
-                                            lineNumber: 718,
+                                            lineNumber: 723,
                                             columnNumber: 45
                                         }, this)
                                     ]
                                 }, row.id ? `${String(row.id)}-${rowIndex}` : rowIndex, true, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 706,
+                                    lineNumber: 711,
                                     columnNumber: 37
                                 }, this);
                             }) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
@@ -830,28 +831,28 @@ function DataTableComponent(props) {
                                     children: searchTerm ? 'No results found for your search.' : 'No data available.'
                                 }, void 0, false, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 732,
+                                    lineNumber: 737,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 731,
+                                lineNumber: 736,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/DataTable.tsx",
-                            lineNumber: 701,
+                            lineNumber: 706,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/DataTable.tsx",
-                    lineNumber: 639,
+                    lineNumber: 644,
                     columnNumber: 13
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 625,
+                lineNumber: 630,
                 columnNumber: 13
             }, this),
             showPagination && sortedData.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -874,7 +875,7 @@ function DataTableComponent(props) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 748,
+                                lineNumber: 753,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -885,7 +886,7 @@ function DataTableComponent(props) {
                                         children: "Items per page:"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 753,
+                                        lineNumber: 758,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -902,7 +903,7 @@ function DataTableComponent(props) {
                                                 children: "10"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 763,
+                                                lineNumber: 768,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -910,7 +911,7 @@ function DataTableComponent(props) {
                                                 children: "25"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 764,
+                                                lineNumber: 769,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -918,7 +919,7 @@ function DataTableComponent(props) {
                                                 children: "50"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 765,
+                                                lineNumber: 770,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -926,25 +927,25 @@ function DataTableComponent(props) {
                                                 children: "100"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 766,
+                                                lineNumber: 771,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 754,
+                                        lineNumber: 759,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 752,
+                                lineNumber: 757,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 747,
+                        lineNumber: 752,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -960,14 +961,14 @@ function DataTableComponent(props) {
                                         className: "h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 777,
+                                        lineNumber: 782,
                                         columnNumber: 29
                                     }, this),
                                     "Previous"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 771,
+                                lineNumber: 776,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -980,12 +981,12 @@ function DataTableComponent(props) {
                                         children: pageNum
                                     }, pageNum, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 783,
+                                        lineNumber: 788,
                                         columnNumber: 33
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 781,
+                                lineNumber: 786,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -999,31 +1000,31 @@ function DataTableComponent(props) {
                                         className: "h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 802,
+                                        lineNumber: 807,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 795,
+                                lineNumber: 800,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 770,
+                        lineNumber: 775,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 746,
+                lineNumber: 751,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/DataTable.tsx",
-        lineNumber: 561,
+        lineNumber: 566,
         columnNumber: 9
     }, this);
 }

@@ -764,7 +764,7 @@ function AddMonitorPage() {
             var _customerData_licenses;
             var _customerData_licenses_some;
             return (_customerData_licenses_some = customerData === null || customerData === void 0 ? void 0 : (_customerData_licenses = customerData.licenses) === null || _customerData_licenses === void 0 ? void 0 : _customerData_licenses.some({
-                "AddMonitorPage.useMemo[hasEnterpriseLicense]": (l)=>l.licenseType === 2 && l.isActive
+                "AddMonitorPage.useMemo[hasEnterpriseLicense]": (l)=>l.licenseType === 1 && l.isActive
             }["AddMonitorPage.useMemo[hasEnterpriseLicense]"])) !== null && _customerData_licenses_some !== void 0 ? _customerData_licenses_some : false;
         }
     }["AddMonitorPage.useMemo[hasEnterpriseLicense]"], [

@@ -17,6 +17,7 @@ import { GlobalErrorDisplay } from '@/components/GlobalErrorDisplay';
 import { TenantIndicator } from '@/components/ui/tenant-indicator';
 import { ConsentBanner } from '@/components/ConsentBanner';
 import { VerifyConsentOnMount } from '@/components/VerifyConsentOnMount';
+import { Toaster } from 'sonner';
 
 function MainContent({ children }: { children: React.ReactNode }) {
     const { isCollapsed } = useSidebar();
@@ -44,6 +45,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             defaultTheme="system"
             enableSystem
         >
+            <Toaster richColors position="top-right" />
             <MsalProvider instance={msalInstance}>
                 <ErrorProvider>
                     <ConsentProvider>

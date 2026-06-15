@@ -6,7 +6,7 @@
   "static/chunks/node_modules_@azure_msal-common_dist_5f96181d._.js",
   "static/chunks/node_modules_@azure_msal-browser_dist_d3ab8b54._.js",
   "static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_56b6fd65._.js",
-  "static/chunks/node_modules_73e37342._.js"
+  "static/chunks/node_modules_1b7287b8._.js"
 ],
     source: "dynamic"
 });
