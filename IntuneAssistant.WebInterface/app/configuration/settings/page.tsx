@@ -24,6 +24,7 @@ import { AssignmentsTableSkeleton } from '@/components/AssignmentsTableSkeleton'
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
+import {OmaCatalogMigrationInfo, OmaMigrationBanner} from "@/components/OmaMigrationBanner";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -47,9 +48,10 @@ interface SettingsCatalogSetting {
 
 interface DeviceConfigSetting {
     name: string;
-    value: string;
-    omaUri: string;
-    odataType: string;
+    value: string | null;
+    omaUri: string | null;         // non-null → OMA-URI setting
+    odataType: string | null;
+    catalogMigrationInfo: OmaCatalogMigrationInfo | null;  // non-null → catalog equivalent found
 }
 
 interface GroupPolicySetting {
@@ -101,7 +103,8 @@ interface FlatSetting extends Record<string, unknown> {
     childSettingInfo: { name: string; value: string }[] | null;
     /** Pre-flattened text of all child settings for full-text search. */
     _searchText?: string;
-    omaUri?: string;
+    omaUri?: string | null;
+    catalogMigrationInfo?: OmaCatalogMigrationInfo | null;
     settingId?: string;
     assignmentTargets: string[];
     status: 'ok' | 'duplicate' | 'conflict';
@@ -161,7 +164,9 @@ function flattenPolicies(policies: PolicyResponse[], source: FlatSetting['source
                     policyType: policy.policyType ?? '', platform: policy.platform ?? '',
                     isAssigned: policy.isAssigned, assignments,
                     settingName: s.name ?? '', settingValue: s.value ?? '',
-                    omaUri: s.omaUri, source, childSettingInfo: null,
+                    omaUri: s.omaUri,
+                    catalogMigrationInfo: s.catalogMigrationInfo,
+                    source, childSettingInfo: null,
                     assignmentTargets, status: 'ok', conflictPeers: [],
                 });
             }
@@ -648,8 +653,9 @@ export default function PolicySettingsPage() {
             width: 240,
             minWidth: 160,
             render: (value: unknown, row: Record<string, unknown>) => {
-                const omaUri = row.omaUri as string | undefined;
+                const omaUri = row.omaUri as string | null | undefined;
                 const settingId = row.settingId as string | undefined;
+                const catalogMigrationInfo = row.catalogMigrationInfo as OmaCatalogMigrationInfo | null | undefined;
                 const name = String(value ?? '');
                 const showId = settingId && name === settingId;
                 return (
@@ -657,6 +663,24 @@ export default function PolicySettingsPage() {
                         <div className="font-medium text-foreground">{name}</div>
                         {omaUri && <div className="text-xs text-muted-foreground truncate" title={omaUri}>{omaUri}</div>}
                         {showId && <div className="text-xs text-muted-foreground truncate" title={settingId}>{settingId}</div>}
+                        {/* OMA-URI badge — shown for all OMA-URI settings without a catalog match */}
+                        {omaUri && !catalogMigrationInfo && (
+                            <Badge
+                                variant="outline"
+                                className="mt-1 text-xs text-gray-500 border-gray-300 dark:text-gray-400 dark:border-gray-600"
+                            >
+                                OMA-URI
+                            </Badge>
+                        )}
+                        {/* Amber indicator for OMA-URI settings that have a catalog migration available */}
+                        {omaUri && catalogMigrationInfo && (
+                            <Badge
+                                variant="outline"
+                                className="mt-1 text-xs border-amber-400 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20"
+                            >
+                                ⚠ Migration available
+                            </Badge>
+                        )}
                     </div>
                 );
             }
@@ -1029,6 +1053,17 @@ export default function PolicySettingsPage() {
                     searchPlaceholder="Search settings, policies, values…"
                     onSearchChange={setActiveSearch}
                     className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10"
+                    expandedRowRender={(row) => {
+                        const migrationInfo = row.catalogMigrationInfo as OmaCatalogMigrationInfo | null | undefined;
+                        const omaUri = row.omaUri as string | null | undefined;
+                        if (!omaUri || !migrationInfo) return null;
+                        return (
+                            <OmaMigrationBanner
+                                info={migrationInfo}
+                                settingName={String(row.settingName ?? '')}
+                            />
+                        );
+                    }}
                 />
             )}
 

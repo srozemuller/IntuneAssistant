@@ -191,13 +191,17 @@ docs/
 │       ├── user-assignments-configuration.md
 │       └── user-assignments-apps.md
 │
-└── configuration/
-    ├── README.md                      ← Configuration section overview
-    ├── policies.md
-    └── settings.md
+├── configuration/
+│   ├── README.md                      ← Configuration section overview
+│   ├── policies.md
+│   └── settings.md
+│
+└── monitor/
+    ├── README.md                      ← Monitor section overview (baselines, drifts)
+    └── configuration-drifts.md        ← Drift list, filters, Accept Drift dialog
 ```
 
-More sections will be added as documentation is expanded to cover Conditional Access, Devices, Compare, Monitor, and the licensed extensions.
+More sections will be added as documentation is expanded to cover Conditional Access, Devices, Compare, and the licensed extensions.
 
 ---
 
