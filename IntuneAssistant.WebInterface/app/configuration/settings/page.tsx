@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
     RefreshCw, ChevronDown, ChevronRight, ChevronUp, X, AlertTriangle,
-    Copy, Database, XCircle, Filter, Users
+    Copy, Database, XCircle, Filter, Users, Archive
 } from 'lucide-react';
 import {
     POLICY_SETTINGS_CATALOG_ENDPOINT,
@@ -514,6 +514,7 @@ export default function PolicySettingsPage() {
         { label: 'OK', value: 'ok' },
         { label: 'Duplicate', value: 'duplicate' },
         { label: 'Conflict', value: 'conflict' },
+        { label: 'Deprecated', value: 'deprecated' },
     ], []);
 
     const assignedOptions = useMemo<Option[]>(() => [
@@ -536,7 +537,13 @@ export default function PolicySettingsPage() {
         let data = settings;
         if (sourceFilter.length) data = data.filter(s => sourceFilter.includes(s.source));
         if (platformFilter.length) data = data.filter(s => platformFilter.includes(s.platform));
-        if (statusFilter.length) data = data.filter(s => statusFilter.includes(s.status));
+        if (statusFilter.length) {
+            data = data.filter(s => {
+                const regularStatuses = statusFilter.filter(f => f !== 'deprecated');
+                if (regularStatuses.includes(s.status)) return true;
+                return statusFilter.includes('deprecated') && s.settingName.startsWith('[Deprecated]');
+            });
+        }
         if (assignedFilter.length) data = data.filter(s => assignedFilter.includes(String(s.isAssigned)));
         return data;
     }, [settings, sourceFilter, platformFilter, statusFilter, assignedFilter]);
@@ -550,6 +557,7 @@ export default function PolicySettingsPage() {
         grouppolicy: settings.filter(s => s.source === 'grouppolicy').length,
         duplicates: settings.filter(s => s.status === 'duplicate').length,
         conflicts: settings.filter(s => s.status === 'conflict').length,
+        deprecated: settings.filter(s => s.settingName.startsWith('[Deprecated]')).length,
     }), [settings]);
 
     const exportData = useMemo((): ExportData => {
@@ -607,6 +615,7 @@ export default function PolicySettingsPage() {
                 const settingName = String(row.settingName ?? '');
                 const settingValue = String(row.settingValue ?? '');
                 const policyName = String(value ?? 'N/A');
+                const isDeprecated = settingName.startsWith('[Deprecated]');
                 return (
                     <div className="space-y-1">
                         <div className="font-medium text-foreground truncate">{policyName}</div>
@@ -614,6 +623,15 @@ export default function PolicySettingsPage() {
                             <Badge variant="outline" className={`text-xs ${sourceBadgeClass[src] ?? ''}`}>
                                 {sourceLabel[src] ?? src}
                             </Badge>
+                            {isDeprecated && (
+                                <button onClick={() => setStatusFilter(prev =>
+                                    prev.includes('deprecated') ? prev : [...prev, 'deprecated']
+                                )}>
+                                    <Badge variant="outline" className="text-xs bg-slate-50 text-slate-600 dark:bg-slate-900/30 dark:text-slate-400 hover:bg-slate-100 cursor-pointer flex items-center gap-1 border-slate-300 dark:border-slate-600">
+                                        <Archive className="h-3 w-3" /> Deprecated
+                                    </Badge>
+                                </button>
+                            )}
                             {status === 'duplicate' && (
                                 <button onClick={() => setPeersDialogInfo({ settingName, settingValue, policyName, status: 'duplicate', peers })}>
                                     <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300 hover:bg-yellow-100 cursor-pointer flex items-center gap-1">
@@ -995,6 +1013,25 @@ export default function PolicySettingsPage() {
                                         className={`cursor-pointer hover:opacity-80 transition-opacity bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-700 flex items-center gap-1 ${active ? 'ring-2 ring-offset-1 ring-red-500' : ''}`}
                                     >
                                         <AlertTriangle className="h-3 w-3" /> {stats.conflicts} conflict{stats.conflicts !== 1 ? 's' : ''}
+                                    </Badge>
+                                </button>
+                            );
+                        })()}
+
+                        {/* Deprecated badge */}
+                        {stats.deprecated > 0 && (() => {
+                            const active = statusFilter.includes('deprecated');
+                            return (
+                                <button
+                                    onClick={() => setStatusFilter(active ? statusFilter.filter(f => f !== 'deprecated') : [...statusFilter, 'deprecated'])}
+                                    title={active ? 'Remove deprecated filter' : 'Filter deprecated'}
+                                    className="focus:outline-none"
+                                >
+                                    <Badge
+                                        variant="outline"
+                                        className={`cursor-pointer hover:opacity-80 transition-opacity bg-slate-50 text-slate-600 dark:bg-slate-900/30 dark:text-slate-400 border-slate-300 dark:border-slate-600 flex items-center gap-1 ${active ? 'ring-2 ring-offset-1 ring-slate-400' : ''}`}
+                                    >
+                                        <Archive className="h-3 w-3" /> {stats.deprecated} deprecated
                                     </Badge>
                                 </button>
                             );
