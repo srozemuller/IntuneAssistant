@@ -56,6 +56,7 @@ import {
     MonitorCheck,
     ScrollText, ShieldUser,
     Bell,
+    FileChartLine
 } from 'lucide-react';
 
 const iconMap = {
@@ -78,7 +79,8 @@ const iconMap = {
     Crown,
     ShieldCheck,
     MonitorCheck,
-    ScrollText
+    ScrollText,
+    FileChartLine
 };
 
 interface MenuItem {
@@ -353,6 +355,17 @@ export function Sidebar() {
                         { title: "Drifts", href: "/monitor/drift" },
                         { title: "Snapshots", href: "/monitor/snapshots" }
                     ]
+                }
+            ]
+        },
+        {
+            title: "Reports",
+            badgeColor: "bg-green-500",
+            items: [
+                {
+                    title: "Health scripts outputs",
+                    icon: "FileChartLine",
+                    href: "/scripts/health"
                 }
             ]
         },
