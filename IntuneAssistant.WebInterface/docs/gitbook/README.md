@@ -76,6 +76,18 @@ Monitor device compliance status, enrolled device inventory, and configuration s
 
 ---
 
+### 📜 Scripts
+
+> **Path in the app:** Scripts → Health Scripts
+
+Intune Remediation Scripts (also called health scripts or proactive remediations) run PowerShell on managed Windows devices to detect and fix configuration issues. When the detection script outputs valid JSON, Intune Assistant captures that data and presents it as a fully filterable, exportable report with dynamic columns — turning your scripts into a lightweight device inventory system.
+
+| Page | What It Does |
+|---|---|
+| [Health Scripts Report](./scripts/health-scripts.md) | List all remediation scripts and open a per-script device run-state report with auto-generated JSON output columns |
+
+---
+
 ### 🔄 Compare _(coming soon in docs)_
 
 > **Path in the app:** Compare

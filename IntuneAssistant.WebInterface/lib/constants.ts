@@ -108,3 +108,7 @@ export const WORKER_REGISTRATION_DELETE_ENDPOINT = (registrationId: string) => `
 
 export const MESSAGE_CENTER_ENDPOINT = `${API_BASE_URL}/message-center`;
 
+export const HEALTH_SCRIPTS_ENDPOINT = `${API_BASE_URL}/scripts/health`;
+export const HEALTH_SCRIPT_RUN_STATES_REPORT_ENDPOINT = (scriptId: string) =>
+    `${API_BASE_URL}/scripts/health/${scriptId}/runstates/report`;
+
