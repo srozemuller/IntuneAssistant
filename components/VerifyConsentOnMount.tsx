@@ -1,0 +1,127 @@
+// components/VerifyConsentOnMount.tsx
+'use client';
+
+import { useEffect, useRef } from 'react';
+import { useMsal } from '@azure/msal-react';
+import { useApiRequest } from '@/hooks/useApiRequest';
+import { useConsent, CONSENT_PENDING_KEY } from '@/contexts/ConsentContext';
+import { IA_VERIFY_ENDPOINT } from '@/lib/constants';
+
+interface ConsentVerifyResponse {
+    status: number;
+    message: string;
+    details: {
+        consentUrl: string;
+    };
+    data: {
+        hasAllPermissions: boolean;
+        requiredPermissions: string[];
+        missingPermissions: string[];
+    };
+}
+
+const CONSENT_CHECK_KEY = 'ia_consent_verified';
+
+export function VerifyConsentOnMount() {
+    const { accounts } = useMsal();
+    const { request } = useApiRequest();
+    const { setConsentNeeded, clearConsent } = useConsent();
+    const hasVerified = useRef(false);
+
+    useEffect(() => {
+        // Expose a global function to force re-verification (for testing)
+        if (typeof window !== 'undefined') {
+            (window as Window & { forceConsentCheck?: () => void }).forceConsentCheck = () => {
+                console.log('FORCE: Clearing consent verification flag');
+                sessionStorage.removeItem(CONSENT_CHECK_KEY);
+                sessionStorage.removeItem(CONSENT_PENDING_KEY);
+                hasVerified.current = false;
+                window.location.reload();
+            };
+        }
+
+        const verifyConsent = async () => {
+            console.log('VerifyConsent: Starting verification check...');
+            
+            // Skip consent check on auth/onboarding pages
+            if (typeof window !== 'undefined') {
+                const path = window.location.pathname;
+                if (path === '/auth/verify' || path.startsWith('/onboarding')) {
+                    console.log('VerifyConsent: Skipping on auth/onboarding page:', path);
+                    return;
+                }
+            }
+            
+            console.log('VerifyConsent: Accounts count:', accounts.length);
+
+            // Skip if no accounts
+            if (!accounts.length) {
+                console.log('VerifyConsent: No accounts, skipping verification');
+                return;
+            }
+
+            // Check if already verified this session
+            const alreadyVerified = sessionStorage.getItem(CONSENT_CHECK_KEY);
+            if (alreadyVerified || hasVerified.current) {
+                console.log('VerifyConsent: Already verified this session, skipping');
+                return;
+            }
+
+            // Mark as verified to prevent multiple calls
+            hasVerified.current = true;
+            sessionStorage.setItem(CONSENT_CHECK_KEY, 'true');
+
+            console.log('VerifyConsent: Making API call to:', IA_VERIFY_ENDPOINT);
+
+            try {
+                const response = await request<ConsentVerifyResponse>(
+                    IA_VERIFY_ENDPOINT,
+                    { method: 'GET', headers: { 'Content-Type': 'application/json' } },
+                );
+
+                console.log('VerifyConsent: Response received', response);
+
+                // Unwrap ApiResponseWithCorrelation — actual payload is at response.data
+                const payload = response?.data;
+
+                if (payload && payload.status === 3) {
+                    console.log('VerifyConsent: Consent required - missing permissions:', payload.data?.missingPermissions);
+                    // Keep the session flag set: the pending consent is persisted by ConsentContext and
+                    // the banner re-verifies on demand, so the API isn't probed again on every page load.
+                    // Show the scopes that are actually missing; fall back to the full required list.
+                    const missing = payload.data?.missingPermissions?.length
+                        ? payload.data.missingPermissions
+                        : payload.data?.requiredPermissions || [];
+                    setConsentNeeded(payload.details?.consentUrl || '', missing);
+                } else if (payload && payload.status === 0) {
+                    console.log('VerifyConsent: All permissions granted');
+                    clearConsent();
+                } else {
+                    console.log('VerifyConsent: Unexpected status:', payload?.status);
+                }
+            } catch (error) {
+                console.error('VerifyConsent: Error checking consent', error);
+                
+                // Check if it's a 404 error (customer not found)
+                const errorMessage = error instanceof Error ? error.message.toLowerCase() : '';
+                if (errorMessage.includes('404') || errorMessage.includes('not found') || errorMessage.includes('no customer')) {
+                    console.log('VerifyConsent: Customer not found (404) - redirecting to onboarding');
+                    // Customer doesn't exist - redirect to onboarding
+                    if (typeof window !== 'undefined') {
+                        window.location.href = '/onboarding/customer';
+                    }
+                    return;
+                }
+                
+                // Even on other errors, keep the session flag so we don't retry constantly
+                // User can refresh page to retry if needed
+            }
+        };
+
+        verifyConsent();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [accounts.length]); // Run when accounts become available (user logs in)
+
+    return null;
+}
+

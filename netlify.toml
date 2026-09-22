@@ -1,0 +1,16 @@
+[build]
+  command = "npm install && npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Use Next.js runtime for dynamic routes
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Handle client-side routing (order matters)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

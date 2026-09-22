@@ -1,65 +1,59 @@
-### General module information
-<a href="https://github.com/srozemuller/intuneassistant" target="_blank"><img src="https://img.shields.io/github/v/release/srozemuller/intuneassistant?label=latest-release&style=flat-square" alt="CurrentVersion"></a> <a href="https://github.com/srozemuller/intuneassistant/issues" target="_blank"><img src="https://img.shields.io/github/issues/srozemuller/intuneassistant?style=flat-square" alt="Issues"></a> </a><a href="https://github.com/srozemuller/intuneassistant/tree/beta" target="_blank"><img src="https://img.shields.io/maintenance/yes/2023?style=flat-square" alt="Beta"></a> </a><a href="https://github.com/srozemuller/intuneassistant/tree/beta" target="_blank"><img src="https://img.shields.io/github/license/srozemuller/intuneassistant?style=flat-square" alt="Beta"></a>
-
-![Nuget](https://img.shields.io/nuget/dt/IntuneCli?style=flat-square&label=NuGet%20downloads)
-![GitHub last commit (branch)](https://img.shields.io/github/last-commit/srozemuller/IntuneAssistant/main?style=flat-square)
-
-
-<a href="https://www.buymeacoffee.com/srozemuller" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 30px !important;width: 117px !important;"></a>
-
-
 # IntuneAssistant
 
-Welcome to **The IntuneCLI**. This CLI helps you managing Microsoft Intune environments.
+A free, read-only community tool that shows what is really configured in your Microsoft Intune tenant.
 
-## Installation
-To use this tool several options are available and can be use on Windows, MacOS and Linux.
-In any way you first need to install at least `dotnet 7.0`. To install dotnet use the commands below.
+- **Free.** For every Intune administrator.
+- **Read-only.** It never creates, changes or deletes anything in your tenant.
+- **Open source.** Read it, fork it, improve it.
 
-### Install dotnet 7 sdk Windows
-winget install --id Microsoft.DotNet.SDK.7 --source winget --log C:\Temp\install.log
-Check the link on [Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/core/install/windows?tabs=net70) for installing dotnet 7.0 on Windows.
-### Install dotnet 7 sdk macOS
-Check the link on [Mircosoft Learn](https://learn.microsoft.com/en-us/dotnet/core/install/macos)
+## What you can do with it
 
-Restart the terminal.
+| Ask… | Where |
+|---|---|
+| Who gets this policy or app? | Assignments → All configurations / Apps |
+| What applies to this group, user or filter? | Assignments → By group / By user / By filter |
+| What is on this device? How do two devices differ? | Devices → Overview / Compare / Duplicates |
+| Which policies and settings do I have? | Policies → Policy list / Settings overview / Conditional Access |
+| Who are my Intune administrators? | Check → Admin roles |
+| What is Microsoft announcing? | Check → Service announcements |
 
-### NuGet
-The recommended way to install this tool is with the use of the NuGet repository. Using the NuGet repository simplifies the download process. 
-By using the install command below the correct package is selected automatically.  
-Another advantage is using the NuGet installation method is that the command ```intuneCli``` becomes available in your whole system. 
-You don't have to execute the specific file.
+## Getting started
 
-### Add the nuget feed
-```
-dotnet nuget add source https://api.nuget.org/v3/index.json --name nuget.org
-```
+1. Open the app and sign in with the Microsoft work account of the tenant you want to look at.
+2. Create your account (one click) and let a Global Administrator approve read-only access.
+3. Explore.
 
-### This command will install the tool
-```
-dotnet tool install --global IntuneCLI
-```
+Access can be removed at any time by deleting the IntuneAssistant enterprise application in Microsoft Entra ID.
+More about permissions and data on the *Privacy & security* page in the app.
 
-### Update to the latest version
-```
-dotnet tool update --global IntuneCLI
-```
+## Run it locally
 
-### Clear nuget cache (if the tool is not found)
-It can happen that the update process does not find the latest package available on NuGet. In that case, you have to clear the local NuGet cache.
-```
-dotnet nuget locals all --clear
+Requires Node.js 22.
+
+```bash
+npm install
+npm run dev
 ```
 
-### Help
-If you need more information about all commands available use the `-h` option in a specific area.
-Examples:
+The app talks to the IntuneAssistant API. `lib/constants.ts` picks the API from `NEXT_PUBLIC_APP_ENV`
+(`development` → local API, `test` → test API, otherwise production).
 
-```shell
-intuneCli auth -h
-```
+## Read-only on purpose
 
-```shell
-intuneCli show devices -h
-```
-Check for all information and commands: https://rozemuller.com/intunecli
+Every request to the API is a `GET`. `lib/apiRequest.ts` refuses any other method, with one exception:
+creating your own account during onboarding (`POST /customer`), which writes to our own service and never to your tenant.
+If you add a feature, it has to work with `GET` requests.
+
+## Contributing
+
+- Found a bug or have an idea? [Open an issue](https://github.com/srozemuller/IntuneAssistant/issues/new/choose).
+- Pull requests are welcome. Keep it simple: this tool should stay easy for anyone to pick up and use.
+- Documentation lives at [docs.intuneassistant.cloud](https://docs.intuneassistant.cloud).
+
+## Command line
+
+There is also a command line tool. See [`IntuneAssistant.Cli`](IntuneAssistant.Cli/README.md).
+
+## License
+
+[GPL-3.0](LICENSE)

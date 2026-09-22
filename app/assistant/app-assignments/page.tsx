@@ -1,0 +1,1366 @@
+'use client';
+import React, { useState, useEffect } from 'react';
+import { useMsal } from '@azure/msal-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DataTable } from '@/components/DataTable';
+import { Badge } from '@/components/ui/badge';
+import {
+    RefreshCw,
+    Filter,
+    Database,
+    Search,
+    X,
+    Download,
+    Shield,
+    ShieldCheck,
+    ChevronDown,
+    ChevronUp, Blocks, CircleQuestionMark, XCircle
+} from 'lucide-react';
+import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ROLE_SCOPETAGS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
+import { MultiSelect, Option } from '@/components/ui/multi-select';
+import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
+import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
+import {useApiRequest} from "@/hooks/useApiRequest";
+import {CancelledCard} from "@/components/CancelledCard";
+import {FilterDetailsDialog} from "@/components/FilterDialog";
+import {AssignmentsTableSkeleton} from "@/components/AssignmentsTableSkeleton";
+import {AssignmentFilter} from "@/types/assignmentFilter";
+import {AssignmentWarningIcon} from "@/components/AssignmentWarningIcon";
+
+interface ApiResponse {
+    status: string;
+    message: string;
+    details: unknown[];
+    data: {
+        data: Assignments[];
+        totalCount: number;
+        pageSize: number;
+        currentPage: number;
+        totalPages: number;
+        hasNextPage: boolean;
+        nextPageToken?: string;
+    } | { url: string; message: string };
+}
+
+
+// Simple interface instead of complex schema
+interface Assignments extends Record<string, unknown> {
+    resourceType: string;
+    assignmentType: string;
+    platform: string | null;
+    isAssigned: boolean;
+    enrollmentType: string;
+    targetId: string | null;
+    targetName: string;
+    resourceId: string;
+    resourceName: string | null;
+    filterId: string | null;
+    filterType: string;
+    assignmentDirection: string;
+    isExcluded: boolean;
+    scopeTagIds?: string[];
+    warnings?: string[];
+    group?: {
+        id: string;
+        displayName: string;
+        description: string;
+    };
+}
+
+interface RoleScopeTag {
+    id: string;
+    displayName: string;
+    description: string;
+    isBuildIn: boolean;
+    assignments: unknown[];
+}
+
+
+
+
+export default function AssignmentsOverview() {
+    const { accounts } = useMsal();
+    const { request, cancel } = useApiRequest();
+    const [isCancelled, setIsCancelled] = useState(false);
+
+
+    const [assignments, setAssignments] = useState<Assignments[]>([]);
+    const [filteredAssignments, setFilteredAssignments] = useState<Assignments[]>([]);
+    const [filters, setFilters] = useState<AssignmentFilter[]>([]);
+    const [roleScopeTags, setRoleScopeTags] = useState<RoleScopeTag[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    // Filter dialog states
+    const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
+    const [selectedFilter, setSelectedFilter] = useState<AssignmentFilter | null>(null);
+    const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
+
+
+    // Filter states
+    const [assignmentTypeFilter, setAssignmentTypeFilter] = useState<string[]>([]);
+    const [statusFilter, setStatusFilter] = useState<string[]>([]);
+    const [platformFilter, setPlatformFilter] = useState<string[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
+    const [filterTypeFilter, setFilterTypeFilter] = useState<string[]>([]);
+    const [installTypeFilter, setInstallTypeFilter] = useState<string[]>([]);
+    const [roleScopeTagFilter, setRoleScopeTagFilter] = useState<string[]>([]);
+    const [filterNameFilter, setFilterNameFilter] = useState<string[]>([]);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
+
+    const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+    const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
+
+    const [fetchedPages, setFetchedPages] = useState(0);
+    const [fetchPageSize, setFetchPageSize] = useState(100);
+    const [paginationInfo, setPaginationInfo] = useState({
+        totalCount: 0,
+        hasNextPage: false,
+        nextPageToken: null as string | null,
+        currentPage: 0
+    });
+    const [loadingMore, setLoadingMore] = useState(false);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [assignmentTypeFilter, statusFilter, platformFilter, installTypeFilter, resourceTypeFilter, filterTypeFilter, roleScopeTagFilter, filterNameFilter, searchQuery]);
+
+    const getUniqueResourceTypes = (): Option[] => {
+        const types = new Set<string>();
+        assignments.forEach(assignment => {
+            types.add(assignment.resourceType);
+        });
+        return Array.from(types).sort().map(type => ({ label: type, value: type }));
+    };
+
+    const getUniqueInstallTypes = (): Option[] => {
+        const types = new Set<string>();
+        assignments.forEach(assignment => {
+            types.add(assignment.enrollmentType);
+        });
+        return Array.from(types).sort().map(type => ({ label: type, value: type }));
+    };
+
+    const getUniqueFilterTypes = (): Option[] => [
+        { label: 'No Filter', value: 'none' },
+        { label: 'Include Filter', value: 'include' },
+        { label: 'Exclude Filter', value: 'exclude' }
+    ];
+
+    const prepareExportData = (): ExportData => {
+        const exportColumns: ExportColumn[] = [
+            {
+                key: 'resourceType',
+                label: 'Type',
+                width: 20,
+                getValue: (row) => String(row.resourceType || '')
+            },
+            {
+                key: 'resourceName',
+                label: 'Resource',
+                width: 30,
+                getValue: (row) => String(row.resourceName || 'N/A')
+            },
+            {
+                key: 'assignmentType',
+                label: 'Assignment',
+                width: 25,
+                getValue: (row) => String(row.assignmentType || '')
+            },
+            {
+                key: 'targetName',
+                label: 'Target',
+                width: 30,
+                getValue: (row) => String(row.targetName || '')
+            },
+            {
+                key: 'platform',
+                label: 'Platform',
+                width: 15,
+                getValue: (row) => String(row.platform || 'All')
+            },
+            {
+                key: 'isAssigned',
+                label: 'Status',
+                width: 15,
+                getValue: (row) => row.isAssigned ? 'Assigned' : 'Not Assigned'
+            },
+            {
+                key: 'enrollmentType',
+                label: 'Install Type',
+                width: 15,
+                getValue: (row) =>String(row.enrollmentType  || '')
+            },
+            {
+                key: 'filterId',
+                label: 'Filter',
+                width: 25,
+                getValue: (row) => {
+                    const filterId = row.filterId as string | null;
+                    if (!filterId || filterId === 'None') return 'None';
+                    const filterInfo = getFilterInfo(filterId, String(row.filterType));
+                    return filterInfo.displayName;
+                }
+            },
+            {
+                key: 'filterType',
+                label: 'Filter Type',
+                width: 25,
+                getValue: (row) => String(row.filterType || '')
+            }
+        ];
+
+        const stats = [
+            { label: 'Total Assignments', value: filteredAssignments.length },
+            { label: 'Assigned', value: filteredAssignments.filter(a => a.isAssigned).length },
+            { label: 'Not Assigned', value: filteredAssignments.filter(a => !a.isAssigned).length },
+            { label: 'Resource Types', value: new Set(filteredAssignments.map(a => a.resourceType)).size },
+            { label: 'Platforms', value: new Set(filteredAssignments.map(a => a.platform)).size }
+        ];
+
+        return {
+            data: filteredAssignments,
+            columns: exportColumns,
+            filename: 'apps-assignments-overview',
+            title: 'Apps Assignments Overview',
+            description: 'Detailed view of all Intune application assignments across your organization',
+            stats
+        };
+    };
+
+    const fetchAssignments = async () => {
+        if (!accounts.length) return;
+
+        setLoading(true);
+        setError(null);
+        setPaginationInfo({ totalCount: 0, hasNextPage: false, nextPageToken: null, currentPage: 0 });
+
+        try {
+            await Promise.all([fetchAssignmentsData(), fetchFilters(), fetchRoleScopeTags()]);
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+            setError(error instanceof Error ? error.message : 'Failed to fetch data');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loadMoreAssignments = async () => {
+        if (!paginationInfo.nextPageToken || loadingMore) return;
+
+        setLoadingMore(true);
+        setError(null);
+
+        try {
+            await fetchAssignmentsData(paginationInfo.nextPageToken);
+        } catch (error) {
+            console.error('Failed to load more assignments:', error);
+            setError(error instanceof Error ? error.message : 'Failed to load more data');
+        } finally {
+            setLoadingMore(false);
+        }
+    };
+
+    const fetchAssignmentsData = async (skipToken?: string) => {
+        if (!accounts.length) return;
+
+        const url = skipToken
+            ? `${ASSIGNMENTS_ENDPOINT}/apps?skipToken=${encodeURIComponent(skipToken)}`
+            : `${ASSIGNMENTS_ENDPOINT}/apps?pageSize=${fetchPageSize}`;
+
+        const responseData = await request<ApiResponse>(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!responseData) {
+            setError('No response received from API');
+            return;
+        }
+
+        const apiResponse = responseData.data;
+
+        if (apiResponse.status === 'Success' && apiResponse.data) {
+            const paginatedData = apiResponse.data;
+
+            if ('data' in paginatedData && Array.isArray(paginatedData.data)) {
+                if (skipToken) {
+                    // Append to existing data for "Load More"
+                    setAssignments(prev => [...prev, ...paginatedData.data]);
+                    setFilteredAssignments(prev => [...prev, ...paginatedData.data]);
+                    setFetchedPages(prev => prev + 1);
+                } else {
+                    // Replace data for initial load
+                    setAssignments(paginatedData.data);
+                    setFilteredAssignments(paginatedData.data);
+                    setFetchedPages(1);
+                }
+
+                // Update pagination info
+                setPaginationInfo({
+                    totalCount: paginatedData.totalCount,
+                    hasNextPage: paginatedData.hasNextPage,
+                    nextPageToken: paginatedData.nextPageToken || null,
+                    currentPage: paginatedData.currentPage
+                });
+            } else {
+                console.error('API response data is not in expected format:', paginatedData);
+                if (!skipToken) {
+                    setAssignments([]);
+                    setFilteredAssignments([]);
+                    setFetchedPages(0);
+                }
+                setError('Invalid data format received from API');
+            }
+        } else {
+            setError(apiResponse.message || 'Failed to fetch assignments');
+        }
+    };
+
+    const handleFilterClick = (filterId: string) => {
+        if (filterId && filterId !== 'none') {
+            // Find the filter in the already loaded filters
+            const filter = filters.find(f => f.id === filterId);
+            if (filter) {
+                setSelectedFilter(filter);
+                setIsFilterDialogOpen(true);
+            }
+        }
+    };
+
+    const fetchFilters = async () => {
+        if (!accounts.length) return;
+
+        try {
+            const responseData = await request<{ status: number; message: string; details: unknown[]; data: AssignmentFilter[] }>(
+                ASSIGNMENTS_FILTERS_ENDPOINT,
+                { method: 'GET', headers: { 'Content-Type': 'application/json' } }
+            );
+
+            if (!responseData) {
+                console.error('No response received from filters API');
+                setFilters([]);
+                return;
+            }
+
+            // Unwrap ApiResponseWithCorrelation → .data.data is the AssignmentFilter array
+            if (Array.isArray(responseData.data.data)) {
+                setFilters(responseData.data.data);
+            } else {
+
+                console.error('Filters API response is not an array:', responseData);
+                setFilters([]);
+            }
+        } catch (error) {
+            console.error('Failed to fetch filters:', error);
+            setFilters([]);
+        }
+    };
+
+    const fetchRoleScopeTags = async () => {
+        if (!accounts.length) return;
+
+        try {
+            const responseData = await request<{ data: RoleScopeTag[] }>(ROLE_SCOPETAGS_ENDPOINT, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!responseData) {
+                console.error('No response received from role scope tags API');
+                setRoleScopeTags([]);
+                return;
+            }
+
+            // Unwrap ApiResponseWithCorrelation: responseData.data is { data: RoleScopeTag[] }
+            if (responseData.data && Array.isArray(responseData.data.data)) {
+                setRoleScopeTags(responseData.data.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch role scope tags:', error);
+            setRoleScopeTags([]);
+        }
+    };
+
+
+    const getFilterInfo = (filterId: string | null, filterType: string) => {
+        if (!filterId || filterId === 'none' || filterType === 'none') {
+            return { displayName: 'None', managementType: null, platform: null };
+        }
+
+        const filter = filters.find(f => f.id === filterId);
+        return {
+            displayName: filter?.displayName || 'Unknown Filter',
+            managementType: filter?.assignmentFilterManagementType?.toLowerCase() || null,
+            platform: filter?.platform || null
+        };
+    };
+
+    const handleResourceClick = (resourceId: string, assignmentType: string) => {
+        if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude' || assignmentType === 'GroupAssignment') && resourceId) {
+            setSelectedGroupId(resourceId);
+            setIsGroupDialogOpen(true);
+        }
+    };
+
+
+    // Filter and search function
+    useEffect(() => {
+        let filtered = assignments;
+
+        // Apply dropdown filters
+        if (resourceTypeFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) =>
+                resourceTypeFilter.includes(assignment.resourceType)
+            );
+        }
+
+        if (assignmentTypeFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) => {
+                if (assignmentTypeFilter.includes('Not Assigned')) {
+                    return !assignment.isAssigned || assignmentTypeFilter.includes(assignment.assignmentType);
+                }
+                return assignment.isAssigned && assignmentTypeFilter.includes(assignment.assignmentType);
+            });
+        }
+
+        if (statusFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) => {
+                if (statusFilter.includes('Assigned') && statusFilter.includes('Not Assigned')) {
+                    return true;
+                }
+                if (statusFilter.includes('Assigned')) return assignment.isAssigned;
+                if (statusFilter.includes('Not Assigned')) return !assignment.isAssigned;
+                return false;
+            });
+        }
+
+        if (platformFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) => {
+                const platform = assignment.platform || 'All';
+                return platformFilter.includes(platform);
+            });
+        }
+
+        if (filterTypeFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) => {
+                const filterType = assignment.filterType;
+
+                // Check for "No Filter" selection
+                if (filterTypeFilter.includes('none') && (!filterType || filterType === 'none' || filterType === 'None')) {
+                    return true;
+                }
+
+                // Check for include/exclude filter
+                return filterTypeFilter.includes(filterType);
+            });
+        }
+        if (installTypeFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) => {
+                const enrollmentType = assignment.enrollmentType || 'All';
+                return installTypeFilter.includes(enrollmentType);
+            });
+        }
+
+        if (roleScopeTagFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) => {
+                return assignment.scopeTagIds?.some(id => roleScopeTagFilter.includes(id));
+            });
+        }
+
+        if (filterNameFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) => {
+                return assignment.filterId ? filterNameFilter.includes(assignment.filterId) : false;
+            });
+        }
+
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter((assignment: Assignments) => {
+                return (
+                    assignment.resourceName?.toLowerCase().includes(query) ||
+                    assignment.targetName?.toLowerCase().includes(query) ||
+                    assignment.assignmentType?.toLowerCase().includes(query) ||
+                    assignment.resourceType?.toLowerCase().includes(query) ||
+                    assignment.platform?.toLowerCase().includes(query) ||
+                    getFilterInfo(assignment.filterId, assignment.filterType).displayName.toLowerCase().includes(query)
+                );
+            });
+        }
+
+        setFilteredAssignments(filtered);
+    }, [assignments, assignmentTypeFilter, resourceTypeFilter, statusFilter, platformFilter, filterTypeFilter, installTypeFilter, roleScopeTagFilter, filterNameFilter, searchQuery]);
+
+
+    // Get unique values for filters
+    const getUniqueAssignmentTypes = (): Option[] => {
+        const types = new Set<string>();
+        assignments.forEach(assignment => {
+            if (assignment.isAssigned) {
+                types.add(assignment.assignmentType);
+            } else {
+                types.add('Not Assigned');
+            }
+        });
+        return Array.from(types).sort().map(type => ({ label: type, value: type }));
+    };
+
+    const getUniqueStatuses = (): Option[] => [
+        { label: 'Assigned', value: 'Assigned' },
+        { label: 'Not Assigned', value: 'Not Assigned' }
+    ];
+
+    const getUniquePlatforms = (): Option[] => {
+        const platforms = new Set<string>();
+        assignments.forEach(assignment => {
+            platforms.add(assignment.platform || 'All');
+        });
+        return Array.from(platforms).sort().map(platform => ({ label: platform, value: platform }));
+    };
+
+    const getUniqueRoleScopeTags = (): Option[] => {
+        const tagIds = new Set<string>();
+        assignments.forEach(assignment => {
+            assignment.scopeTagIds?.forEach(id => tagIds.add(id));
+        });
+
+        return Array.from(tagIds)
+            .map(id => {
+                const tag = roleScopeTags.find(t => t.id === id);
+                return {
+                    label: tag?.displayName || `Unknown (${id})`,
+                    value: id
+                };
+            })
+            .sort((a, b) => a.label.localeCompare(b.label));
+    };
+
+    const getUniqueFilterNames = (): Option[] => {
+        const filterIds = new Set<string>();
+        assignments.forEach(assignment => {
+            if (assignment.filterId && assignment.filterId !== 'none') {
+                filterIds.add(assignment.filterId);
+            }
+        });
+
+        return Array.from(filterIds)
+            .map(id => {
+                const filter = filters.find(f => f.id === id);
+                return {
+                    label: filter?.displayName || `Unknown (${id})`,
+                    value: id
+                };
+            })
+            .sort((a, b) => a.label.localeCompare(b.label));
+    };
+
+    const getDistinctAppsCount = () => {
+        const uniqueApps = new Set(assignments.map(assignment => assignment.resourceId));
+        return uniqueApps.size;
+    };
+
+
+    const clearFilters = () => {
+        setAssignmentTypeFilter([]);
+        setResourceTypeFilter([]);
+        setStatusFilter([]);
+        setPlatformFilter([]);
+        setFilterTypeFilter([]);
+        setInstallTypeFilter([]);
+        setRoleScopeTagFilter([]);
+        setFilterNameFilter([]);
+        setSearchQuery('');
+    };
+
+
+    const columns = [
+        {
+            key: 'resourceName' as string,
+            label: 'Resource',
+            width: 200,
+            minWidth: 150,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const resourceName = value ? String(value) : 'N/A';
+                const resourceType = String(row.resourceType);
+                const resourceId = String(row.resourceId);
+                const warnings = row.warnings as string[] | undefined;
+
+                if (resourceType === 'Group' && resourceId && resourceName !== 'N/A') {
+                    return (
+                        <div className="flex items-center gap-0.5">
+                            <button
+                                onClick={() => handleResourceClick(resourceId, String(row.assignmentType))}
+                                className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
+                                title={resourceName}
+                            >
+                                {resourceName}
+                            </button>
+                            <AssignmentWarningIcon warnings={warnings} />
+                        </div>
+                    );
+                }
+
+                return (
+                    <div className="space-y-0.5">
+                        <div className="flex items-center gap-0.5">
+                            <span className="font-medium text-sm truncate block w-full" title={resourceName}>
+                                {resourceName}
+                            </span>
+                            <AssignmentWarningIcon warnings={warnings} />
+                        </div>
+                        <span className="text-xs text-gray-400 block">{resourceType}</span>
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'platform' as string,
+            label: 'Platform',
+            width: 100,
+            minWidth: 80,
+            render: (value: unknown) => {
+                const platform = value ? String(value) : 'All';
+                const platformColors: Record<string, string> = {
+                    'Windows': 'bg-blue-100 text-blue-800 border-blue-200',
+                    'iOS': 'bg-gray-100 text-gray-800 border-gray-200',
+                    'Android': 'bg-green-100 text-green-800 border-green-200',
+                    'macOS': 'bg-purple-100 text-purple-800 border-purple-200',
+                    'All': 'bg-gray-100 text-gray-600 border-gray-200'
+                };
+
+                return (
+                    <Badge
+                        variant="outline"
+                        className={`text-xs whitespace-nowrap ${platformColors[platform] || platformColors['All']}`}
+                    >
+                        {platform}
+                    </Badge>
+                );
+            }
+        },
+        {
+            key: 'assignmentType' as string,
+            label: 'Assignment',
+            width: 140,
+            minWidth: 100,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const isAssigned = Boolean(row.isAssigned);
+                if (!isAssigned) {
+                    return (
+                        <Badge variant="secondary" className="text-xs whitespace-nowrap">
+                            Not Assigned
+                        </Badge>
+                    );
+                }
+
+                const assignmentType = String(value);
+                const isExclude = assignmentType.includes('Exclude');
+
+                return (
+                    <Badge
+                        variant={isExclude ? "destructive" : "default"}
+                        className="text-xs whitespace-nowrap"
+                    >
+                        {assignmentType}
+                    </Badge>
+                );
+            }
+        },
+        {
+            key: 'targetName' as string,
+            label: 'Target',
+            width: 180,
+            minWidth: 120,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const targetName = String(value);
+                const assignmentType = String(row.assignmentType);
+                const isAssigned = Boolean(row.isAssigned);
+                const targetId = row.targetId as string;
+                const group = row.group as {
+                    id: string;
+                    displayName: string;
+                    description: string;
+                    membershipRule: string | null;
+                    groupCount?: { userCount: number; deviceCount: number; groupCount: number }
+                } | undefined;
+
+                if (isAssigned && (assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude') && targetId) {
+                    return (
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={() => handleResourceClick(targetId, assignmentType)}
+                                    className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate flex-1 text-left"
+                                    title={targetName}
+                                >
+                                    {targetName}
+                                </button>
+                                {group?.membershipRule && (
+                                    <span title="Dynamic Group">
+                                        <Blocks className="h-3 w-3 text-purple-500 shrink-0"/>
+                                    </span>
+                                )}
+                            </div>
+                            {group?.groupCount && (
+                                <div className="flex gap-1 text-xs text-gray-500 items-center">
+                                    <span>{group.groupCount.userCount} {group.groupCount.userCount === 1 ? 'user' : 'users'}</span>
+                                    <span>{group.groupCount.deviceCount} {group.groupCount.deviceCount === 1 ? 'device' : 'devices'}</span>
+                                    <span>{group.groupCount.groupCount} {group.groupCount.groupCount === 1 ? 'group' : 'groups'}</span>
+                                    {group.groupCount.groupCount > 0 && (
+                                        <span
+                                            className="text-amber-500 hover:text-amber-600 cursor-help ml-1"
+                                            title="This group contains nested groups. Use the Assignments by Group page to find all nested group assignments."
+                                        >
+                <CircleQuestionMark className="h-3 w-3" />
+            </span>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    );
+                }
+
+                return (
+                    <span className="text-sm truncate block w-full" title={targetName}>
+                        {targetName}
+                    </span>
+                );
+            }
+        },
+        {
+            key: 'enrollmentType' as string,
+            label: 'Install Type',
+            width: 100,
+            minWidth: 80,
+            render: (value: unknown) => (
+                <span className="text-sm text-gray-600 whitespace-nowrap">
+                    {value ? String(value) : 'All'}
+                </span>
+            )
+        },
+        {
+            key: 'isAssigned' as string,
+            label: 'Status',
+            width: 120,
+            minWidth: 90,
+            render: (value: unknown) => {
+                const isAssigned = Boolean(value);
+                return (
+                    <Badge variant={isAssigned ? 'default' : 'secondary'}
+                           className={`text-xs whitespace-nowrap ${isAssigned ? 'bg-green-500 hover:bg-green-600' : ''}`}>
+                        {isAssigned ? 'Assigned' : 'Not Assigned'}
+                    </Badge>
+                );
+            }
+        },
+        {
+            key: 'filterId' as string,
+            label: 'Filter',
+            width: 160,
+            minWidth: 120,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const filterId = value as string | null;
+                const filterType = String(row.filterType);
+                const filterInfo = getFilterInfo(filterId, filterType);
+
+                if (!filterId || filterId === 'None' || filterType === 'None') {
+                    return <span className="text-xs text-gray-500">None</span>;
+                }
+
+                const isInclude = filterType === 'include';
+                return (
+                    <div className="space-y-1">
+                        <button
+                            onClick={() => handleFilterClick(filterId)}
+                            className="text-yellow-400 hover:text-yellow-500 underline text-xs font-medium cursor-pointer truncate block w-full text-left"
+                            title={filterInfo.displayName}
+                        >
+                            {filterInfo.displayName}
+                        </button>
+                        <div className="flex items-center">
+                            {isInclude ? (
+                                <Badge variant="default" className="text-xs bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white border-green-400 dark:border-green-500 px-1 py-0">
+                                    <Shield className="h-2 w-2 mr-1" />
+                                    Inc
+                                </Badge>
+                            ) : (
+                                <Badge variant="destructive" className="text-xs bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white border-red-400 dark:border-red-500 px-1 py-0">
+                                    <ShieldCheck className="h-2 w-2 mr-1" />
+                                    Exc
+                                </Badge>
+                            )}
+                        </div>
+                    </div>
+                );
+            }
+        }
+    ];
+
+    return (
+        <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">Intune application assignments Overview</h1>
+                    <p className="text-gray-600 dark:text-gray-300 mt-2">
+                        View all Intune applications assignments across your organization
+                    </p>
+                </div>
+                <div className="flex gap-2">
+                    {assignments.length > 0 ? (
+                        <>
+                            <Button onClick={fetchAssignments} variant="outline" size="sm" disabled={loading}>
+                                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`}/>
+                                Refresh
+                            </Button>
+                            <ExportButton
+                                exportOptions={[
+                                    {
+                                        label: "Standard Export",
+                                        data: prepareExportData(),
+                                        formats: ['csv', 'pdf', 'html']
+                                    }
+                                ]}
+                                variant="outline"
+                                size="sm"
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <Button
+                                onClick={fetchAssignments}
+                                disabled={loading}
+                                className="flex items-center gap-2"
+                            >
+                                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>
+                                Load Assignments
+                            </Button>
+                            {loading && (
+                                <Button
+                                    onClick={() => {
+                                        cancel();
+                                        setAssignments([]);
+                                        setFilteredAssignments([]);
+                                        setError(null);
+                                        setLoading(false);
+                                        setIsCancelled(true);
+                                    }}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="flex items-center gap-2"
+                                >
+                                    <XCircle className="h-4 w-4"/>
+                                    Cancel
+                                </Button>
+                            )}
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {/* Error Display */}
+            {error && (
+                <Card className="border-red-200">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-2 text-red-600">
+                            <X className="h-5 w-5" />
+                            <span className="font-medium">Error:</span>
+                            <span>{error}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                            Error occurred while fetching assignments. Please try again.
+                        </p>
+                        <Button onClick={fetchAssignments} className="mt-4" variant="outline">
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Try Again
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Welcome card */}
+            {assignments.length === 0 && !loading && !error && (
+                <Card className="relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
+                    <CardContent className="pt-6">
+                        <div className="text-center py-12">
+                            <div className="text-gray-400 dark:text-gray-500 mb-6">
+                                <Database className="h-16 w-16 mx-auto" />
+                            </div>
+                            <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-4">
+                                Ready to view your Intune assignments
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md mx-auto">
+                                Click the &quot;Load Assignments&quot; button below to fetch all assignment configurations from your Intune environment.
+                            </p>
+
+                            {/* Page Size Selector */}
+                            <div className="mb-6">
+                                <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">
+                                    Items per page
+                                </label>
+                                <select
+                                    value={fetchPageSize}
+                                    onChange={(e) => setFetchPageSize(Number(e.target.value))}
+                                    className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                >
+                                    <option value={50}>50 per page</option>
+                                    <option value={100}>100 per page</option>
+                                    <option value={250}>250 per page</option>
+                                    <option value={500}>500 per page</option>
+                                </select>
+                            </div>
+
+                            <Button onClick={fetchAssignments} className="flex items-center gap-2 mx-auto" size="lg">
+                                <Database className="h-5 w-5" />
+                                Load Assignments
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+
+            {/* Loading state with skeleton */}
+            {loading && (
+                <AssignmentsTableSkeleton
+                    showStats={true}
+                    statsCount={4}
+                    showFilters={true}
+                    tableRows={10}
+                    tableColumns={7}
+                />
+            )}
+
+            {isCancelled && !loading && (
+                <CancelledCard
+                    onRetry={() => {
+                        setIsCancelled(false);
+                        fetchAssignments();
+                    }}
+                    title="Loading Cancelled"
+                    description="Assignment data loading was cancelled. Click below to load assignments again."
+                    buttonText="Load Assignments"
+                />
+            )}
+
+            {/* Filters and content sections */}
+            {assignments.length > 0 && !loading && (
+                <>
+                    {/* Filters Section */}
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="flex items-center justify-between">
+                                <button
+                                    onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
+                                    className="flex items-center gap-2 hover:text-yellow-400 transition-colors"
+                                >
+                                    <Filter className="h-5 w-5" />
+                                    Filters
+                                    {isFiltersExpanded ? (
+                                        <ChevronUp className="h-4 w-4" />
+                                    ) : (
+                                        <ChevronDown className="h-4 w-4" />
+                                    )}
+                                </button>
+                                <div className="flex items-center gap-2">
+                                    {!isFiltersExpanded && (
+                                        <Badge variant="secondary" className="text-xs">
+                                            {resourceTypeFilter.length + assignmentTypeFilter.length + statusFilter.length + platformFilter.length + filterTypeFilter.length + installTypeFilter.length + roleScopeTagFilter.length + filterNameFilter.length} active
+                                        </Badge>
+                                    )}
+                                    {(resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0 || filterTypeFilter.length > 0 || installTypeFilter.length > 0 || roleScopeTagFilter.length > 0 || filterNameFilter.length > 0) && (
+                                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                                            Clear All
+                                        </Button>
+                                    )}
+                                </div>
+                            </CardTitle>
+                            {/* Show active filters summary when collapsed */}
+                            {!isFiltersExpanded && (resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0 || filterTypeFilter.length > 0 || installTypeFilter.length > 0 || roleScopeTagFilter.length > 0 || filterNameFilter.length > 0) && (
+                                <div className="flex flex-wrap gap-1 pt-2">
+                                    {resourceTypeFilter.map(filter => (
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Resource: {filter}
+                                            <button
+                                                onClick={() => setResourceTypeFilter(prev => prev.filter(f => f !== filter))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                    {assignmentTypeFilter.map(filter => (
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Assignment: {filter}
+                                            <button
+                                                onClick={() => setAssignmentTypeFilter(prev => prev.filter(f => f !== filter))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                    {statusFilter.map(filter => (
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Status: {filter}
+                                            <button
+                                                onClick={() => setStatusFilter(prev => prev.filter(f => f !== filter))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                    {platformFilter.map(filter => (
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Platform: {filter}
+                                            <button
+                                                onClick={() => setPlatformFilter(prev => prev.filter(f => f !== filter))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                    {filterTypeFilter.map(filter => (
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Filter: {filter}
+                                            <button
+                                                onClick={() => setFilterTypeFilter(prev => prev.filter(f => f !== filter))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                    {installTypeFilter.map(filter => (
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Install: {filter}
+                                            <button
+                                                onClick={() => setInstallTypeFilter(prev => prev.filter(f => f !== filter))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                    {roleScopeTagFilter.map(id => (
+                                        <Badge key={id} variant="outline" className="text-xs">
+                                            Role Scope Tag: {roleScopeTags.find(t => t.id === id)?.displayName || id}
+                                            <button
+                                                onClick={() => setRoleScopeTagFilter(prev => prev.filter(f => f !== id))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                    {filterNameFilter.map(id => (
+                                        <Badge key={id} variant="outline" className="text-xs">
+                                            Filter: {filters.find(f => f.id === id)?.displayName || id}
+                                            <button
+                                                onClick={() => setFilterNameFilter(prev => prev.filter(f => f !== id))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                </div>
+                            )}
+                        </CardHeader>
+
+                        {/* Collapsible Content */}
+                        {isFiltersExpanded && (
+                            <CardContent className="space-y-4">
+                                {/* Search */}
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"/>
+                                    <input
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={e => setSearchQuery(e.target.value)}
+                                        placeholder="Search by name, type, target, platform…"
+                                        className="w-full pl-9 pr-9 py-2 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    />
+                                    {searchQuery && (
+                                        <button
+                                            onClick={() => setSearchQuery('')}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                        >
+                                            <X className="h-4 w-4"/>
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Resource Type</label>
+                                        <MultiSelect
+                                            options={getUniqueResourceTypes()}
+                                            selected={resourceTypeFilter}
+                                            onChange={setResourceTypeFilter}
+                                            placeholder="Select resource types..."
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Assignment Type</label>
+                                        <MultiSelect
+                                            options={getUniqueAssignmentTypes()}
+                                            selected={assignmentTypeFilter}
+                                            onChange={setAssignmentTypeFilter}
+                                            placeholder="Select assignment types..."
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Status</label>
+                                        <MultiSelect
+                                            options={getUniqueStatuses()}
+                                            selected={statusFilter}
+                                            onChange={setStatusFilter}
+                                            placeholder="Select status..."
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Platform</label>
+                                        <MultiSelect
+                                            options={getUniquePlatforms()}
+                                            selected={platformFilter}
+                                            onChange={setPlatformFilter}
+                                            placeholder="Select platforms..."
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Filter Type</label>
+                                        <MultiSelect
+                                            options={getUniqueFilterTypes()}
+                                            selected={filterTypeFilter}
+                                            onChange={setFilterTypeFilter}
+                                            placeholder="Select filter types..."
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Install Type</label>
+                                        <MultiSelect
+                                            options={getUniqueInstallTypes()}
+                                            selected={installTypeFilter}
+                                            onChange={setInstallTypeFilter}
+                                            placeholder="Select install types..."
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Role Scope Tags</label>
+                                        <MultiSelect
+                                            options={getUniqueRoleScopeTags()}
+                                            selected={roleScopeTagFilter}
+                                            onChange={setRoleScopeTagFilter}
+                                            placeholder="Select scope tags..."
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Filter</label>
+                                        <MultiSelect
+                                            options={getUniqueFilterNames()}
+                                            selected={filterNameFilter}
+                                            onChange={setFilterNameFilter}
+                                            placeholder="Select filters..."
+                                        />
+                                    </div>
+                                </div>
+
+                                {(resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0 || filterTypeFilter.length > 0 || installTypeFilter.length > 0) && (
+                                    <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Active filters:</span>
+                                        {resourceTypeFilter.map(filter => (
+                                            <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                                {filter}
+                                                <button onClick={() => setResourceTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                        {assignmentTypeFilter.map(filter => (
+                                            <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                                {filter}
+                                                <button onClick={() => setAssignmentTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                        {statusFilter.map(filter => (
+                                            <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                                {filter}
+                                                <button onClick={() => setStatusFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                        {platformFilter.map(filter => (
+                                            <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                                {filter}
+                                                <button onClick={() => setPlatformFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                        {filterTypeFilter.map(filter => (
+                                            <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                                {filter}
+                                                <button onClick={() => setFilterTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                        {installTypeFilter.map(filter => (
+                                            <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                                {filter}
+                                                <button onClick={() => setInstallTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                )}
+                            </CardContent>
+                        )}
+                    </Card>
+
+                    {error && (
+                        <Card className="border-red-200 bg-red-50">
+                            <CardContent className="pt-6">
+                                <div className="flex items-center gap-2 text-red-800">
+                                    <span className="font-medium">Error:</span>
+                                    <span>{error}</span>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {/* Assignment Details Table */}
+                    <Card className="relative overflow-hidden transition-all duration-300  hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
+                        <CardHeader className="pb-4">
+                            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                <span>Assignment Details</span>
+                                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                                    {paginationInfo.totalCount > 0 && (
+                                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-right">
+                <span>
+                    Showing {assignments.length} assignments in {getDistinctAppsCount()} unique applications
+                </span>
+                                            <span className="hidden sm:inline">•</span>
+                                            <span>
+                   total {paginationInfo.totalCount} apps
+                </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </CardTitle>
+                            <CardDescription className="text-gray-600 dark:text-gray-300">
+                                Detailed view of all assignments with their targets and configurations
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            {loading ? (
+                                <div className="flex items-center justify-center h-32">
+                                    <RefreshCw className="h-6 w-6 animate-spin text-yellow-400" />
+                                    <span className="ml-2 text-gray-600 dark:text-gray-300">Loading assignments...</span>
+                                </div>
+                            ) : (
+                                <>
+                                    <DataTable
+                                        data={filteredAssignments}
+                                        columns={columns}
+                                        showPagination={true}
+                                        currentPage={currentPage}
+                                        itemsPerPage={itemsPerPage}
+                                        onPageChange={setCurrentPage}
+                                        onItemsPerPageChange={setItemsPerPage}
+                                    />
+
+                                    {/* Load More Button */}
+                                    {paginationInfo.hasNextPage && (
+                                        <div className="flex justify-center py-6 border-t border-gray-200 dark:border-gray-700">
+                                            <Button
+                                                onClick={loadMoreAssignments}
+                                                disabled={loadingMore}
+                                                variant="outline"
+                                                className="flex items-center gap-2"
+                                            >
+                                                {loadingMore ? (
+                                                    <>
+                                                        <RefreshCw className="h-4 w-4 animate-spin" />
+                                                        Loading more...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Download className="h-4 w-4" />
+                                                        Load More ({paginationInfo.totalCount - (fetchedPages * fetchPageSize)} items remaining)
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </div>
+                                    )}
+
+                                    {/* No more data indicator */}
+                                    {!paginationInfo.hasNextPage && assignments.length > 0 && paginationInfo.totalCount > 0 && (
+                                        <div className="text-center py-4 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700">
+                                            All {paginationInfo.totalCount} assignments loaded
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Filtered empty state */}
+                    {filteredAssignments.length === 0 && !loading && !error && assignments.length > 0 && (
+                        <Card className="relative overflow-hidden transition-all duration-300  hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
+                            <CardContent className="pt-6">
+                                <div className="text-center py-12">
+                                    <div className="text-gray-400 dark:text-gray-500 mb-4">
+                                        {searchQuery ? <Search className="h-12 w-12 mx-auto" /> : <Filter className="h-12 w-12 mx-auto" />}
+                                    </div>
+                                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                                        {searchQuery ? 'No assignments match your search' : 'No assignments match your filters'}
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-300 mb-4">
+                                        {searchQuery
+                                            ? 'Try adjusting your search terms or clearing filters.'
+                                            : 'Try adjusting your filter criteria or clear all filters to see more results.'}
+                                    </p>
+                                    <Button onClick={clearFilters} variant="outline">
+                                        {searchQuery ? 'Clear Search & Filters' : 'Clear All Filters'}
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+                </>
+            )}
+
+            <GroupDetailsDialog
+                groupId={selectedGroupId}
+                isOpen={isGroupDialogOpen}
+                onClose={() => {
+                    setIsGroupDialogOpen(false);
+                    setSelectedGroupId(null);
+                }}
+            />
+
+            <FilterDetailsDialog
+                filter={selectedFilter}
+                isOpen={isFilterDialogOpen}
+                onClose={() => {
+                    setIsFilterDialogOpen(false);
+                    setSelectedFilter(null);
+                }}
+            />
+        </div>
+    );
+}
