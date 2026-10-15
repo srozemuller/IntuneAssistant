@@ -105,22 +105,16 @@ export const AUDIT_LOGS_INTUNE_EVENTS = `${API_BASE_URL}/audit/intune/page`;
 export const AUDIT_LOGS_INTUNE_FILTER = `${API_BASE_URL}/audit/intune/filter`;
 export const AUDIT_LOGS_INTUNE_DETAIL_ENDPOINT = (id: string) => `${API_BASE_URL}/audit/intune/${id}`;
 
-// Backup — free, read-only export of Intune configuration (list/export/fetch only read from Graph
-// and stream the JSON back; no Blob writes, no tenant writes). Restore is a real write gated behind
-// the paid config_management module and is deliberately not part of this community app.
+// Backup — read-only export of Intune configuration (list/export/fetch only read from Graph and
+// stream the JSON back; no storage writes, no tenant writes). Restore is not part of this app.
 export const BACKUP_EXPORT_ENDPOINT = (resourceType: string) => `${API_BASE_URL}/backup/export/${resourceType}`;
 export const BACKUP_LIST_ENDPOINT = (resourceType: string) => `${API_BASE_URL}/backup/list/${resourceType}`;
 export const BACKUP_FETCH_ENDPOINT = (resourceType: string) => `${API_BASE_URL}/backup/fetch/${resourceType}`;
 
 // Tenant Overview — live SSE stream (GET) that collects every resource family once at sign-in and
-// caches it, powering the global Cmd/Ctrl+K search and the /overview page. Available to every
-// connected account here, but the backend endpoint still carries
-// [Authorize(Policy = "RequireBetaTester")] — a per-customer flag this app cannot grant — so most
-// accounts currently get a 403, which contexts/TenantOverviewContext.tsx treats as quietly idle
-// rather than a visible failure. See IntuneAssistant.Docs/private/todo-list.md for the backend
-// follow-up to revisit that policy. Change history (the stream's `changes` event and
-// TenantOverviewChangesController's `v1/overview/changes*`) is on top of that a paid Configuration
-// Management feature and is deliberately not ported here.
+// caches it, powering the global Cmd/Ctrl+K search and the /overview page. When the endpoint answers
+// 403, contexts/TenantOverviewContext.tsx treats that as quietly idle rather than a visible failure.
+// Change history (the stream's `changes` event) is not part of this app.
 export const TENANT_OVERVIEW_STREAM_ENDPOINT = `${API_BASE_URL}/overview/stream`;
 export const TENANT_OVERVIEW_CACHE_TTL_MS = 30 * 60 * 1000;
 

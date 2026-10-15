@@ -18,12 +18,10 @@ import { OverviewStreamStatus } from '@/components/OverviewStreamStatus';
 import { TenantSearch } from '@/components/TenantSearch';
 
 /**
- * Tenant Overview's global search dialog + status pill. Available to every connected community
- * account. Note: the backend endpoint (`v1/overview/stream`) still carries
- * `[Authorize(Policy = "RequireBetaTester")]` — a per-customer flag the frontend cannot grant. Until
- * that policy is revisited (tracked in the backend todo list), most accounts will simply never see
- * the stream complete; `TenantOverviewContext` treats that specific 403 as quietly idle rather than
- * a visible failure, so this renders unconditionally without showing anyone a broken feature.
+ * Tenant Overview's global search dialog + status pill. Available to every connected account.
+ * If the stream endpoint (`v1/overview/stream`) answers 403, `TenantOverviewContext` treats that as
+ * quietly idle rather than a visible failure, so this renders unconditionally without showing
+ * anyone a broken feature.
  */
 function TenantOverviewGlobalUi() {
     return (

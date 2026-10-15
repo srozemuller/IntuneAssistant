@@ -7,7 +7,7 @@ import { CUSTOMER_ENDPOINT, AUDIT_LOGS_INTUNE_FILTER, BACKUP_FETCH_ENDPOINT, COM
 // API side (a filter/id-list body that is too large for a querystring, wrapped in POST — no Graph
 // write, no tenant mutation) plus one genuine write: creating your own account during onboarding,
 // which writes to our own service, never to your tenant. Never add to this list without checking
-// the controller's own Graph calls first — see IntuneAssistant.Docs/private/todo-list.md.
+// the controller's own Graph calls first.
 const READ_ONLY_METHODS = ['GET', 'HEAD', 'OPTIONS'];
 const READ_ONLY_POST_PREFIXES = [
     AUDIT_LOGS_INTUNE_FILTER,          // filter body only; same read path as GET /audit/intune/page

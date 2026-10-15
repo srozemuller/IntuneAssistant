@@ -2,9 +2,8 @@
 // Mirrors IntuneAssistant/Models/Overview/TenantOverviewStreamModels.cs. There is no generated client:
 // if the backend shape changes, this file has to change by hand.
 //
-// Change history (the stream's `changes` event + IntuneAssistant.API's TenantOverviewChangesController,
-// `v1/overview/changes*`) is a paid Configuration Management feature on top of the beta flag and is not
-// ported to this community app — only the resource inventory (sections, items, assignments) is.
+// Change history (the stream's `changes` event) is not part of this app — only the resource inventory
+// (sections, items, assignments) is.
 
 export type OverviewStepStatus = 'pending' | 'loading' | 'completed' | 'failed';
 
