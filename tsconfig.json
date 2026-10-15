@@ -37,7 +37,6 @@
   ],
   "exclude": [
     "node_modules",
-    "IntuneAssistant.WebInterface",
     "IntuneAssistant.Docs",
     "IntuneAssistant.Cli",
     "temp"
