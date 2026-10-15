@@ -1,0 +1,6 @@
+# GitHub Pages (Jekyll) only needs to render the repository README.
+# The docs under IntuneAssistant.Docs are GitBook content: tags such as {% hint %} are not valid Liquid
+# and stop the Jekyll build. They are served by GitBook, so keep them out of this build.
+theme: jekyll-theme-primer
+exclude:
+  - IntuneAssistant.Docs
