@@ -14,9 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read #This is required for actions/checkout
-    defaults:
-      run:
-        working-directory: IntuneAssistant.WebInterface
 
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +33,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: IntuneAssistant.WebInterface
+          path: |
+            .
+            !.git
+            !.github
+            !IntuneAssistant.Cli
+            !IntuneAssistant.Docs
+            !Documentation
+            !temp
 
   deploy:
     runs-on: ubuntu-latest
@@ -54,7 +58,7 @@ jobs:
 
       - name: Create deployment package
         run: |
-          cd build-artifact/IntuneAssistant.WebInterface
+          cd build-artifact
           zip -r ../../../intuneassistant-web.zip .
       
       - name: Login to Azure

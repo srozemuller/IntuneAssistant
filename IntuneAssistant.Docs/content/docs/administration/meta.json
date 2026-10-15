@@ -1,8 +1,0 @@
-{
-  "title": "Administration",
-  "pages": [
-    "user-access-control",
-    "data-and-privacy",
-    "multi-tenant"
-  ]
-}

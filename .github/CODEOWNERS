@@ -1,0 +1,5 @@
+# The read-only boundary of the community app and the guards that enforce it.
+# Review by a code owner is only enforced when branch protection has "Require review from Code Owners" on.
+/lib/apiRequest.ts                          @srozemuller
+/scripts/                                   @srozemuller
+/.github/                                   @srozemuller

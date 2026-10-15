@@ -1,0 +1,9 @@
+# Paths that still contain paid-feature wording and are tracked. Known debt: this list may only shrink.
+# One path prefix per line. Checked by scripts/check-open-repo.sh.
+#
+# The backend's deploy workflows still push generated changelogs into IntuneAssistant.Docs/docs/ (decision pending).
+IntuneAssistant.Docs/docs/
+# Old backend build changelogs and CLI notes.
+temp/
+# The bug report template still offers "Assignments Manager" as a choice; decide whether to drop it.
+.github/ISSUE_TEMPLATE/BUG_REPORT.yml

@@ -21,7 +21,7 @@ ClientID: 3448bc...    API: afe66dd...     Graph endpoints
 
 - **Frontend auth**: MSAL browser (`@azure/msal-browser`) with session storage
 - **API scope**: `api://afe66ddf-67d4-4d61-8a51-beca7b799f52/access_as_user`
-- **Auth config**: `/IntuneAssistant.WebInterface/lib/msalConfig.ts`
+- **Auth config**: `/lib/msalConfig.ts`
 - **Custom hook**: `useApiRequest()` handles token acquisition and request cancellation
 
 ### Multi-Tenant Architecture (GDAP/MSP Support)
@@ -134,13 +134,12 @@ IntuneAssistant/
 │   ├── Middleware/                 # DI bridge for System.CommandLine
 │   └── Program.cs                  # Service registration & startup
 │
-├── IntuneAssistant.WebInterface/   # Next.js frontend (App Router)
-│   ├── app/                        # Routes & pages
-│   ├── components/                 # Reusable React components
-│   ├── contexts/                   # React contexts (auth, tenant, error)
-│   ├── hooks/                      # Custom hooks (useApiRequest, useAuth)
-│   ├── lib/                        # Utilities (apiRequest, msalConfig, constants)
-│   └── types/                      # TypeScript type definitions
+├── app/                            # Next.js frontend (App Router): routes & pages
+├── components/                     # Reusable React components
+├── contexts/                       # React contexts (auth, tenant, error)
+├── hooks/                          # Custom hooks (useApiRequest, useAuth)
+├── lib/                            # Utilities (apiRequest, msalConfig, constants)
+├── types/                          # TypeScript type definitions
 │
 └── IntuneAssistant.Docs/           # Fumadocs documentation site
     ├── content/docs/               # MDX documentation pages
@@ -173,7 +172,7 @@ dotnet tool install --global --add-source ./nupkg IntuneCLI
 
 ### Web Interface Development
 ```bash
-cd IntuneAssistant.WebInterface
+# From the repository root
 
 # Install dependencies
 npm install

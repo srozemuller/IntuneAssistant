@@ -225,11 +225,9 @@ export function TenantOverviewProvider({ children }: { children: ReactNode }) {
     const { accounts, inProgress } = useMsal();
     const { hasConnectedTenant, customerLoading } = useCustomer();
     const { stream, cancel: cancelStream } = useApiStream();
-    // Available to every connected community account. The backend endpoint (`v1/overview/stream`) still
-    // carries `[Authorize(Policy = "RequireBetaTester")]` — a per-customer flag this app cannot grant — so
-    // most accounts will get a 403 until that policy is revisited (tracked in the backend todo list).
-    // `startStream` below treats that specific 403 as quietly idle instead of a visible failure, so
-    // enabling this unconditionally doesn't show anyone a broken feature.
+    // Available to every connected account. If the stream endpoint (`v1/overview/stream`) answers 403,
+    // `startStream` below treats that as quietly idle instead of a visible failure, so enabling this
+    // unconditionally doesn't show anyone a broken feature.
     const isEnabled = hasConnectedTenant;
     const isResolving = customerLoading;
 
@@ -327,8 +325,7 @@ export function TenantOverviewProvider({ children }: { children: ReactNode }) {
                         dispatch({ type: 'fail', error: payload.details || payload.message || 'The overview stream failed' });
                         break;
                     }
-                    // Change history ('changes') is a paid Configuration Management feature on top of the beta
-                    // flag and is not part of this community app - any such event is simply ignored.
+                    // Change history ('changes') is not part of this app - any such event is simply ignored.
                     default:
                         break;
                 }

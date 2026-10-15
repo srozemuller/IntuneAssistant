@@ -1,0 +1,22 @@
+name: Community leak scan
+
+# This repository is open. Fail the build when build output, dependencies or commercial-only material
+# get tracked. See scripts/check-open-repo.sh.
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for build output and commercial-only material
+        run: bash scripts/check-open-repo.sh
