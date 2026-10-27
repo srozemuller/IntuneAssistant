@@ -1,4 +1,6 @@
 'use client';
+import { DeprecatedGroupNotice } from '@/components/DeprecatedGroupNotice';
+import { DeprecatedGroupsBanner } from '@/components/DeprecatedGroupsBanner';
 import React, {useState, useEffect} from 'react';
 import {useMsal} from '@azure/msal-react';
 ;
@@ -888,6 +890,7 @@ export default function AssignmentsOverview() {
                                     </span>
                                 )}
                             </div>
+                            <DeprecatedGroupNotice groupId={targetId} />
                             {group?.groupCount && (
                                 <div className="flex gap-1 text-xs text-gray-500">
                                     <span>{group.groupCount.userCount} {group.groupCount.userCount === 1 ? 'user' : 'users'}</span>
@@ -1542,6 +1545,7 @@ export default function AssignmentsOverview() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="p-0">
+                            <DeprecatedGroupsBanner targetIds={filteredAssignments.map(a => a.targetId)} className="m-3" />
                             {loading ? (
                                 <div className="flex items-center justify-center h-32">
                                     <RefreshCw className="h-6 w-6 animate-spin text-yellow-400"/>
