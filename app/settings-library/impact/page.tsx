@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { DeprecationRadarPanel } from '@/components/DeprecationRadarPanel';
 import { useApiRequest } from '@/hooks/useApiRequest';
 import { SETTINGS_LIBRARY_TENANT_IMPACT_ENDPOINT } from '@/lib/constants';
 import {
@@ -192,6 +193,11 @@ export default function TenantImpactPage() {
     const { request } = useApiRequest();
     const runRef = useRef(0);
     const [impact, setImpact] = useState<TenantSettingImpact | null | undefined>(undefined);
+    // 'objects' is the deprecation radar; the assignment views link to it with ?tab=objects.
+    const [tab, setTab] = useState<'settings' | 'objects'>('settings');
+    useEffect(() => {
+        if (new URLSearchParams(window.location.search).get('tab') === 'objects') setTab('objects');
+    }, []);
 
     // ── investigation state ──
     const [activeRule, setActiveRule] = useState<ImpactRuleId | null>(null);
@@ -332,6 +338,18 @@ export default function TenantImpactPage() {
                 )}
             </div>
 
+            <div className="flex border-b text-sm" role="tablist" aria-label="Tenant impact">
+                {([['settings', 'Settings'], ['objects', 'Objects and devices']] as const).map(([id, label]) => (
+                    <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)}
+                        className={`px-4 py-2 -mb-px border-b-2 transition-colors ${tab === id ? 'border-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+                        {label}
+                    </button>
+                ))}
+            </div>
+
+            {tab === 'objects' && <DeprecationRadarPanel />}
+
+            {tab === 'settings' && (<>
             {impact === undefined && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Computing…</div>
             )}
@@ -439,6 +457,7 @@ export default function TenantImpactPage() {
                     </div>
                 </>
             )}
+            </>)}
         </div>
     );
 }

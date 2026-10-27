@@ -1,6 +1,7 @@
 // app/overview/page.tsx
 'use client';
 
+import { DeprecationOverviewCard } from '@/components/DeprecationOverviewCard';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { Button } from '@/components/ui/button';
@@ -329,6 +330,9 @@ function TenantOverviewContent() {
                             </CardContent>
                         </Card>
                     </div>
+
+                    {/* Objects Microsoft is about to stop supporting (the deprecation radar) */}
+                    <DeprecationOverviewCard enabled={phase === 'completed'} />
 
                     {/* Resource families + platform split */}
                     <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">

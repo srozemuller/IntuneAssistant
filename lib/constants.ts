@@ -56,6 +56,9 @@ export const SETTINGS_DEFINITIONS_RESOLVE_ENDPOINT = `${API_BASE_URL}/settings/d
 
 // Checks
 export const GROUP_FILTER_ANALYZER_ENDPOINT = `${API_BASE_URL}/analyzer/group-filter`;
+export const DEPRECATION_RADAR_ENDPOINT = `${API_BASE_URL}/analyzer/deprecations`;
+export const DEPRECATION_RADAR_GROUPS_ENDPOINT = `${DEPRECATION_RADAR_ENDPOINT}/groups`;
+export const DEPRECATION_RADAR_RULES_ENDPOINT = `${DEPRECATION_RADAR_ENDPOINT}/rules`;
 export const RBAC_ANALYSIS_ENDPOINT = `${API_BASE_URL}/rbac/analysis`;
 export const SERVICE_ANNOUNCEMENTS_MESSAGES_ENDPOINT = `${API_BASE_URL}/service-announcements/messages`;
 

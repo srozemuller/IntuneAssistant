@@ -1,4 +1,6 @@
 'use client';
+import { DeprecatedGroupNotice } from '@/components/DeprecatedGroupNotice';
+import { DeprecatedGroupsBanner } from '@/components/DeprecatedGroupsBanner';
 import React, {useState, useEffect, useMemo, useRef, useCallback} from 'react';
 import {useMsal} from '@azure/msal-react';
 import {Button} from '@/components/ui/button';
@@ -852,6 +854,7 @@ const isChildRow = (row: Record<string, unknown>): boolean => row.__child === tr
                                     </span>
                                 )}
                             </div>
+                            <DeprecatedGroupNotice groupId={targetId} />
                             {group?.groupCount && (
                                 <div className="flex gap-1 text-xs text-gray-500 items-center">
                                     <span>{group.groupCount.userCount} {group.groupCount.userCount === 1 ? 'user' : 'users'}</span>
@@ -1403,6 +1406,7 @@ const isChildRow = (row: Record<string, unknown>): boolean => row.__child === tr
 
                     {/* Assignment Details Table */}
                     <div className="relative">
+                        <DeprecatedGroupsBanner targetIds={filteredAssignments.map(a => a.targetId)} className="mb-2" />
                         {loading ? (
                             <div className="flex items-center justify-center h-32 bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 rounded-lg">
                                 <RefreshCw className="h-6 w-6 animate-spin text-yellow-500"/>
