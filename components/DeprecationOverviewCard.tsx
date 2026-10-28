@@ -67,7 +67,7 @@ export function DeprecationOverviewCard({ enabled }: Props) {
                     <div className="flex flex-wrap items-center gap-2">
                         {dueSoon > 0 && <Badge variant="outline" className="bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/30 text-[11px]">{dueSoon} due within {DUE_SOON_DAYS} days</Badge>}
                         {undated > 0 && <Badge variant="outline" className="bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30 text-[11px]">{undated} without a date</Badge>}
-                        <Button asChild variant="outline" size="sm"><Link href="/settings-library/impact?tab=objects">View all {findings.length}</Link></Button>
+                        <Button asChild variant="outline" size="sm"><Link href="/analyzer/deprecations">View all {findings.length}</Link></Button>
                     </div>
                 </div>
             </CardHeader>

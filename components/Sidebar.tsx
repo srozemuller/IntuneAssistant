@@ -25,6 +25,7 @@ import {
     FileStack,
     ShieldUser,
     FunnelPlus,
+    Hourglass,
     Megaphone,
     ScrollText,
     ArchiveRestore,
@@ -112,6 +113,7 @@ const menuSections: MenuSection[] = [
         items: [
             { title: 'Admin roles', icon: ShieldUser, href: '/rbac/intune-admin-analyzer' },
             { title: 'Group filters', icon: FunnelPlus, href: '/analyzer/group-filter' },
+            { title: 'Tenant deprecations', icon: Hourglass, href: '/analyzer/deprecations' },
             { title: 'Service announcements', icon: Megaphone, href: '/service-announcements' },
         ],
     },

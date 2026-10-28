@@ -47,7 +47,7 @@ export function DeprecatedGroupsBanner({ targetIds, className }: Props) {
                     {first?.deadline ? ` after ${first.deadline}${first.daysRemaining != null ? ` (${describeDays(first.daysRemaining)})` : ''}` : ''}.
                 </span>{' '}
                 {names}{more}.{' '}
-                <Link href="/settings-library/impact?tab=objects" className="underline">See what depends on them</Link>
+                <Link href="/analyzer/deprecations" className="underline">See what depends on them</Link>
             </span>
         </div>
     );
