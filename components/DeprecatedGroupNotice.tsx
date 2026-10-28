@@ -32,7 +32,7 @@ export function DeprecatedGroupNotice({ groupId }: Props) {
                 <span className="font-medium">{when}</span>
                 <span className="block text-gray-500 dark:text-gray-400">{finding.title}</span>
                 <span className="flex flex-wrap gap-x-3">
-                    <Link href="/settings-library/impact?tab=objects" className="underline">See what depends on it</Link>
+                    <Link href="/analyzer/deprecations" className="underline">See what depends on it</Link>
                     {finding.infoUrl && (
                         <a href={finding.infoUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 underline">
                             Microsoft&apos;s information <ExternalLink className="h-3 w-3" />
