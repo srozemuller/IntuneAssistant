@@ -57,6 +57,9 @@ export const SETTINGS_DEFINITIONS_RESOLVE_ENDPOINT = `${API_BASE_URL}/settings/d
 // Checks
 export const GROUP_FILTER_ANALYZER_ENDPOINT = `${API_BASE_URL}/analyzer/group-filter`;
 export const DEPRECATION_RADAR_ENDPOINT = `${API_BASE_URL}/analyzer/deprecations`;
+export const ERROR_FINDER_LOOKUP_ENDPOINT = `${API_BASE_URL}/troubleshooter/errors/lookup`;
+export const ERROR_FINDER_SCRIPT_FINDINGS_ENDPOINT = `${API_BASE_URL}/troubleshooter/errors/findings/health-scripts`;
+export const ERROR_FINDER_APP_FINDINGS_ENDPOINT = `${API_BASE_URL}/troubleshooter/errors/findings/app-installs`;
 export const DEPRECATION_RADAR_GROUPS_ENDPOINT = `${DEPRECATION_RADAR_ENDPOINT}/groups`;
 export const DEPRECATION_RADAR_RULES_ENDPOINT = `${DEPRECATION_RADAR_ENDPOINT}/rules`;
 export const RBAC_ANALYSIS_ENDPOINT = `${API_BASE_URL}/rbac/analysis`;
