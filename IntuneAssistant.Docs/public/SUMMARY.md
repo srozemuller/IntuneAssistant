@@ -23,6 +23,7 @@
   * [Intune Administrator Analyzer](intune-assistant/security/intune-administrator-analyzer.md)
 * [Analyzer](intune-assistant/analyzer/README.md)
   * [Group to Filter Analyzer](intune-assistant/analyzer/group-to-filter-analyzer.md)
+  * [Error Finder](intune-assistant/analyzer/error-finder.md)
 * [Policies](intune-assistant/policies/README.md)
   * [Policy Overview](intune-assistant/policies/policy-overview.md)
   * [Policy Settings Overview](intune-assistant/policies/policy-settings-overview.md)
