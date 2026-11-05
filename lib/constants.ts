@@ -63,6 +63,7 @@ export const ERROR_FINDER_APP_FINDINGS_ENDPOINT = `${API_BASE_URL}/troubleshoote
 export const DEPRECATION_RADAR_GROUPS_ENDPOINT = `${DEPRECATION_RADAR_ENDPOINT}/groups`;
 export const DEPRECATION_RADAR_RULES_ENDPOINT = `${DEPRECATION_RADAR_ENDPOINT}/rules`;
 export const RBAC_ANALYSIS_ENDPOINT = `${API_BASE_URL}/rbac/analysis`;
+export const INTUNE_RBAC_MAP_ENDPOINT = `${API_BASE_URL}/rbac/intune-map`;
 export const SERVICE_ANNOUNCEMENTS_MESSAGES_ENDPOINT = `${API_BASE_URL}/service-announcements/messages`;
 
 // Settings Library — free Intune platform metadata, no module entitlement required. Search, browse,

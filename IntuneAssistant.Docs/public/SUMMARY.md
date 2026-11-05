@@ -21,6 +21,7 @@
     * [User assignments for configuration profiles](intune-assistant/assignments/user-assignments/user-assignments-for-configuration-profiles.md)
 * [Security](intune-assistant/security/README.md)
   * [Intune Administrator Analyzer](intune-assistant/security/intune-administrator-analyzer.md)
+  * [Intune RBAC Map](intune-assistant/security/intune-rbac-map.md)
 * [Analyzer](intune-assistant/analyzer/README.md)
   * [Group to Filter Analyzer](intune-assistant/analyzer/group-to-filter-analyzer.md)
   * [Error Finder](intune-assistant/analyzer/error-finder.md)

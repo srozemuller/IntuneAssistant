@@ -21,7 +21,19 @@ function extractScopesFromConsentUrl(url: string): string[] {
     }
 }
 
-export function useApiRequest() {
+export interface UseApiRequestOptions {
+    /**
+     * Called when the API answers 403. The page then shows its own explanation and the error banner stays away.
+     * Without it a 403 is shown in the error banner like any other error.
+     */
+    onForbidden?: (error: ApiError) => void;
+}
+
+export function useApiRequest(options?: UseApiRequestOptions) {
+    // A ref, so a new callback on every render does not give `request` a new identity.
+    const onForbiddenRef = useRef(options?.onForbidden);
+    onForbiddenRef.current = options?.onForbidden;
+
     const { instance, accounts } = useMsal();
     const { showError, clearError } = useError();
     const { setConsentNeeded } = useConsent();
@@ -77,6 +89,11 @@ export function useApiRequest() {
                 // Route through the same banner as the login-time verify check, instead of a
                 // dead-end toast — gives the user the actual missing scopes and a way to act on them.
                 setConsentNeeded(err.consentUrl, extractScopesFromConsentUrl(err.consentUrl));
+                return;
+            }
+
+            if (err instanceof ApiError && err.status === 403 && onForbiddenRef.current) {
+                onForbiddenRef.current(err);
                 return;
             }
 

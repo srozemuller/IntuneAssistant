@@ -24,6 +24,7 @@ import {
     Monitor,
     FileStack,
     ShieldUser,
+    KeyRound,
     FunnelPlus,
     Hourglass, Bug,
     Megaphone,
@@ -112,6 +113,7 @@ const menuSections: MenuSection[] = [
         title: 'Check',
         items: [
             { title: 'Admin roles', icon: ShieldUser, href: '/rbac/intune-admin-analyzer' },
+            { title: 'RBAC map', icon: KeyRound, href: '/rbac/intune-rbac-map' },
             { title: 'Group filters', icon: FunnelPlus, href: '/analyzer/group-filter' },
             { title: 'Tenant deprecations', icon: Hourglass, href: '/analyzer/deprecations' },
             { title: 'Error finder', icon: Bug, href: '/analyzer/error-finder' },

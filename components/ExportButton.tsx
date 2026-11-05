@@ -28,7 +28,7 @@ export interface ExportData {
 interface ExportOption {
     label: string;
     data: ExportData;
-    formats?: ('csv' | 'pdf' | 'html')[]; // New optional property to specify allowed formats
+    formats?: ('csv' | 'pdf' | 'html' | 'markdown')[]; // Allowed formats; Markdown only when listed
 }
 
 interface ExportButtonProps {
@@ -323,6 +323,42 @@ export function ExportButton({ data, exportOptions, variant = "default", size = 
         }
     };
 
+    // Markdown: a title, the stats as a list and a pipe table, for pasting into an access review document.
+    const exportToMarkdown = async (dataToExport?: ExportData) => {
+        const exportData = dataToExport || data || (exportOptions && exportOptions.length === 1 ? exportOptions[0].data : null);
+        if (!exportData) return;
+
+        setIsExporting(true);
+        try {
+            const cell = (value: unknown) => String(value ?? '').replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
+            const lines: string[] = [`# ${exportData.title}`, ''];
+            if (exportData.description) lines.push(exportData.description, '');
+            lines.push(`Exported on: ${new Date().toLocaleString()}`, '', `Total records: ${exportData.data.length}`, '');
+            if (exportData.stats && exportData.stats.length > 0) {
+                exportData.stats.forEach(stat => lines.push(`- **${cell(stat.label)}:** ${cell(stat.value)}`));
+                lines.push('');
+            }
+            lines.push(`| ${exportData.columns.map(col => cell(col.label)).join(' | ')} |`);
+            lines.push(`| ${exportData.columns.map(() => '---').join(' | ')} |`);
+            exportData.data.forEach(row => {
+                lines.push(`| ${exportData.columns.map(col => cell(col.getValue ? col.getValue(row) : row[col.key])).join(' | ')} |`);
+            });
+
+            const blob = new Blob([lines.join('\n') + '\n'], { type: 'text/markdown;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', generateFilename(exportData.filename, 'md'));
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     // Show export options with format sub-menus when multiple export options exist
     if (exportOptions && exportOptions.length > 1) {
         return (
@@ -373,6 +409,16 @@ export function ExportButton({ data, exportOptions, variant = "default", size = 
                                         Export as HTML
                                     </DropdownMenuItem>
                                 )}
+                                {allowedFormats.includes('markdown') && (
+                                    <DropdownMenuItem
+                                        onClick={() => exportToMarkdown(option.data)}
+                                        className="flex items-center gap-2 pl-4"
+                                        disabled={isExporting}
+                                    >
+                                        <FileText className="h-4 w-4" />
+                                        Export as Markdown
+                                    </DropdownMenuItem>
+                                )}
                                 {index < exportOptions.length - 1 && (
                                     <div className="border-b border-gray-200 dark:border-gray-700 my-1" />
                                 )}
@@ -411,6 +457,12 @@ export function ExportButton({ data, exportOptions, variant = "default", size = 
                     <Globe className="h-4 w-4" />
                     Export as HTML
                 </DropdownMenuItem>
+                {exportOptions?.length === 1 && exportOptions[0].formats?.includes('markdown') && (
+                    <DropdownMenuItem onClick={() => exportToMarkdown()} className="flex items-center gap-2" disabled={isExporting}>
+                        <FileText className="h-4 w-4" />
+                        Export as Markdown
+                    </DropdownMenuItem>
+                )}
             </DropdownMenuContent>
         </DropdownMenu>
     );
