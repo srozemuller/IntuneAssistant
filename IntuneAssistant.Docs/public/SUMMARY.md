@@ -25,6 +25,7 @@
 * [Analyzer](intune-assistant/analyzer/README.md)
   * [Group to Filter Analyzer](intune-assistant/analyzer/group-to-filter-analyzer.md)
   * [Error Finder](intune-assistant/analyzer/error-finder.md)
+  * [Compliance Coverage](intune-assistant/analyzer/compliance-coverage.md)
 * [Policies](intune-assistant/policies/README.md)
   * [Policy Overview](intune-assistant/policies/policy-overview.md)
   * [Policy Settings Overview](intune-assistant/policies/policy-settings-overview.md)

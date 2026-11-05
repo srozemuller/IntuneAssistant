@@ -1,6 +1,6 @@
 // lib/apiRequest.ts
 import { UserConsentRequiredError } from '@/lib/errors';
-import { CUSTOMER_ENDPOINT, AUDIT_LOGS_INTUNE_FILTER, BACKUP_FETCH_ENDPOINT, COMPARE_ENDPOINT, SETTINGS_DEFINITIONS_RESOLVE_ENDPOINT } from '@/lib/constants';
+import { CUSTOMER_ENDPOINT, AUDIT_LOGS_INTUNE_FILTER, BACKUP_FETCH_ENDPOINT, COMPARE_ENDPOINT, SETTINGS_DEFINITIONS_RESOLVE_ENDPOINT, GAP_ANALYSIS_COMPLIANCE_COVERAGE_RUN_ENDPOINT, GAP_ANALYSIS_COMPLIANCE_COVERAGE_ENDPOINT } from '@/lib/constants';
 
 // IntuneAssistant is a read-only community tool: it never writes to your tenant. Every request is
 // a GET, with a short, explicit allowlist of POST endpoints that are verified read-only on the
@@ -14,6 +14,8 @@ const READ_ONLY_POST_PREFIXES = [
     BACKUP_FETCH_ENDPOINT('').replace(/\/$/, ''), // id-list body only; Graph GET per id, no write
     COMPARE_ENDPOINT,                  // covers /compare/{type}, /compare/json, /compare/{type}/set-analysis — all Read.All only
     SETTINGS_DEFINITIONS_RESOLVE_ENDPOINT, // definitionId list body only; Read.All only
+    GAP_ANALYSIS_COMPLIANCE_COVERAGE_RUN_ENDPOINT,  // no body; starts Intune's read-only report export (Read.All only), result kept in memory only
+    `${GAP_ANALYSIS_COMPLIANCE_COVERAGE_ENDPOINT}/runs/`, // .../runs/{runId}/cancel: stops your own run and drops its status; nothing in the tenant changes
 ];
 
 function assertReadOnly(url: string, method: string | undefined) {

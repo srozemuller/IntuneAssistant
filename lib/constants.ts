@@ -64,6 +64,10 @@ export const DEPRECATION_RADAR_GROUPS_ENDPOINT = `${DEPRECATION_RADAR_ENDPOINT}/
 export const DEPRECATION_RADAR_RULES_ENDPOINT = `${DEPRECATION_RADAR_ENDPOINT}/rules`;
 export const RBAC_ANALYSIS_ENDPOINT = `${API_BASE_URL}/rbac/analysis`;
 export const INTUNE_RBAC_MAP_ENDPOINT = `${API_BASE_URL}/rbac/intune-map`;
+export const GAP_ANALYSIS_COMPLIANCE_COVERAGE_ENDPOINT = `${API_BASE_URL}/gap-analysis/compliance-coverage`;
+export const GAP_ANALYSIS_COMPLIANCE_COVERAGE_RUN_ENDPOINT = `${GAP_ANALYSIS_COMPLIANCE_COVERAGE_ENDPOINT}/run`;
+export const GAP_ANALYSIS_COMPLIANCE_COVERAGE_RUN_STATUS_ENDPOINT = (runId: string) => `${GAP_ANALYSIS_COMPLIANCE_COVERAGE_ENDPOINT}/runs/${runId}`;
+export const GAP_ANALYSIS_COMPLIANCE_COVERAGE_RUN_CANCEL_ENDPOINT = (runId: string) => `${GAP_ANALYSIS_COMPLIANCE_COVERAGE_ENDPOINT}/runs/${runId}/cancel`;
 export const SERVICE_ANNOUNCEMENTS_MESSAGES_ENDPOINT = `${API_BASE_URL}/service-announcements/messages`;
 
 // Settings Library — free Intune platform metadata, no module entitlement required. Search, browse,
